@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "367451243936",
+    "project_id": "callerid-e92cd",
+    "storage_bucket": "callerid-e92cd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367451243936:android:edc395d103647c48ee50c5",
+        "android_client_info": {
+          "package_name": "com.freelances.callerauto"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApcMDfi70a4gLFpV5WGs6nXLiJieVXtOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

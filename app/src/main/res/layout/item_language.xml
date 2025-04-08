@@ -1,0 +1,53 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ctlContainer"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_42sdp"
+    android:layout_marginHorizontal="@dimen/_13sdp"
+    android:layout_marginTop="@dimen/_10sdp"
+    android:background="@drawable/bg_item_language"
+    android:layoutDirection="locale"
+    android:textDirection="locale">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivFlag"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/_14sdp"
+        android:src="@drawable/ic_flag_vietnam"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/CornerRound" />
+
+    <TextView
+        android:id="@+id/tvLanguageName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginHorizontal="@dimen/_14sdp"
+        android:fontFamily="@font/roboto_400"
+        android:textAlignment="textStart"
+        android:textColor="@color/white"
+        android:textDirection="locale"
+        android:textSize="@dimen/_11ssp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/checkboxLanguage"
+        app:layout_constraintStart_toEndOf="@id/ivFlag"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="English" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/checkboxLanguage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/_14sdp"
+        android:src="@drawable/ic_checkbox_language"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

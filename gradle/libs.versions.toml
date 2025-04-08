@@ -1,6 +1,6 @@
 [versions]
 agp = "8.8.0"
-kotlin = "1.9.24"
+kotlin = "2.1.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -10,6 +10,16 @@ material = "1.12.0"
 activity = "1.10.1"
 constraintlayout = "2.2.1"
 
+preferenceKtx = "1.2.1"
+sdp_ssp_android = "1.1.1"
+androidxlifecycle = "2.8.7"
+kotlinx-serialization-json = "1.7.3"
+gson = "2.11.0"
+koin-bom = "4.0.0-RC1"
+gmsGoogleService = "4.4.2"
+
+glide = "4.16.0"
+glideTransformations = "4.3.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,7 +30,39 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxlifecycle" }
+
+#firebase
+firebase-bom = "com.google.firebase:firebase-bom:33.12.0"
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-config-ktx = { module = "com.google.firebase:firebase-config-ktx" }
+firebase-perf-ktx = { module = "com.google.firebase:firebase-perf-ktx" }
+
+# sdp ssp
+sdp-android = { group = "com.intuit.sdp", name = "sdp-android", version.ref = "sdp_ssp_android" }
+ssp-android = { group = "com.intuit.ssp", name = "ssp-android", version.ref = "sdp_ssp_android" }
+
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
+
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
+#koin
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-bom" }
+koin-android-compat = { module = "io.insert-koin:koin-android-compat", version.ref = "koin-bom" }
+
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glide-transformations = { module = "jp.wasabeef:glide-transformations", version.ref = "glideTransformations" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+devtool-ksp = { id = "com.google.devtools.ksp", version = "1.9.22-1.0.16" }
+gms-googleServices = { id = "com.google.gms.google-services", version.ref = "gmsGoogleService" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.3" }
+firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }

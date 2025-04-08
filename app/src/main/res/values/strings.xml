@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">callerAuto</string>
+    <string name="app_name">Caller Auto</string>
+    <string name="this_action_may_contain_ads">This action may contain advertising</string>
+    <string name="language">Language</string>
+    <string name="settings">Settings</string>
+    <string name="call">Call</string>
+    <string name="end_when_lifted">End when lifted</string>
+    <string name="end_timer">End timer</string>
+    <string name="mute_microphone">Mute microphone</string>
+    <string name="enable_speaker">Enable speaker</string>
+    <string name="hide_caller_name">Hide caller name</string>
+    <string name="auto_call">Auto call</string>
+    <string name="start_call_from_position">Start call from position</string>
+    <string name="waiting_time">Waiting time</string>
+    <string name="auto_end">Auto end</string>
+    <string name="reject_incoming_calls">Reject incoming calls</string>
+    <string name="anonymous_call">Anonymous call</string>
+    <string name="repeat_list">Repeat list</string>
+    <string name="redial_from_the_beginning_of_the_list">Redial from the beginning of the list</string>
 </resources>
