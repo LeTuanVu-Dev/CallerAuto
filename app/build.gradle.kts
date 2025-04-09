@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.freelances.callerauto"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -89,4 +89,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.glide.transformations)
     annotationProcessor(libs.compiler)
+    implementation ("org.apache.poi:poi:5.2.5")
+    implementation ("org.apache.poi:poi-ooxml:5.2.5")
+
 }
