@@ -65,5 +65,22 @@
             />
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/frLoading"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/appBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            />
+    </FrameLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
