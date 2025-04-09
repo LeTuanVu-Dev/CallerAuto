@@ -15,6 +15,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private fun initData() {
         sharedPreference.isDoneFirstOpen = true
     }
+
     private fun initAction() {
         binding.apply {
             buttonSetting.safeClick {

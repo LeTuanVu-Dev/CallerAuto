@@ -7,6 +7,7 @@ import com.freelances.callerauto.model.LanguageModel
 import com.freelances.callerauto.presentation.adapters.LanguageAdapter
 import com.freelances.callerauto.presentation.bases.BaseActivity
 import com.freelances.callerauto.presentation.main.MainActivity
+import com.freelances.callerauto.presentation.permission.PermissionActivity
 import com.freelances.callerauto.utils.ext.invisible
 import com.freelances.callerauto.utils.ext.safeClick
 import com.freelances.callerauto.utils.ext.visible
@@ -50,7 +51,7 @@ open class LanguageActivity :
 
 
     private fun navigateToNextScreen() {
-        navigateThenClearTask(MainActivity::class.java)
+        navigateThenClearTask(PermissionActivity::class.java)
     }
 
     private fun setUpAdapter() {

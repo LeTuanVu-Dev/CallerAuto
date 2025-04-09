@@ -21,4 +21,12 @@
     <string name="_ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="seconds">Seconds</string>
+    <string name="permission">Permissions</string>
+    <string name="content_permission_1">Please allow permission access</string>
+    <string name="content_permission_2">This app requires permission to manage calls and camera</string>
+    <string name="call_phone">Call Phone</string>
+    <string name="call_default">Call Default</string>
+    <string name="storage">Storage</string>
+    <string name="_continue">Continue</string>
+    <string name="permissions_denied">permissions denied</string>
 </resources>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:layoutDirection="locale"
+    android:orientation="vertical"
+    android:textDirection="locale">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/_36sdp"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:paddingHorizontal="@dimen/_14sdp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_500"
+            android:gravity="center_vertical"
+            android:text="@string/permission"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <ImageView
+        android:id="@+id/ivPermission"
+        android:layout_width="@dimen/_60sdp"
+        android:layout_height="@dimen/_60sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:src="@drawable/img_permission"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBar" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginHorizontal="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_13sdp"
+        android:fontFamily="@font/roboto_500"
+        android:gravity="center"
+        android:text="@string/content_permission_1"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_13ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivPermission" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvContentSub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginHorizontal="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:fontFamily="@font/roboto_400"
+        android:gravity="center"
+        android:text="@string/content_permission_2"
+        android:textColor="@color/color_EBEBF5_60"
+        android:textSize="@dimen/_11ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvContent" />
+
+
+    <LinearLayout
+        android:id="@+id/lnPermissionCall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_13sdp"
+        android:background="@drawable/bg_item_language"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/_13sdp"
+        app:layout_constraintTop_toBottomOf="@id/tvContentSub">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_400"
+            android:text="@string/storage"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_11ssp" />
+
+        <ImageView
+            android:id="@+id/ivToggleStorage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/_11sdp"
+            android:src="@drawable/ic_toggle_off" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lnPermissionNoty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_13sdp"
+        android:background="@drawable/bg_item_language"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/_13sdp"
+        app:layout_constraintTop_toBottomOf="@id/lnPermissionCall">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_400"
+            android:text="@string/call_default"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_11ssp" />
+
+        <ImageView
+            android:id="@+id/ivToggleCallDefault"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/_11sdp"
+            android:src="@drawable/ic_toggle_off" />
+
+    </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvContinue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:fontFamily="@font/roboto_500"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/_continue"
+        android:textColor="@color/color_63E6E2"
+        android:textSize="@dimen/_11ssp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
