@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/frRootView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_item_setting"
+        android:backgroundTint="@color/white"
+        android:elevation="@dimen/_12sdp"
+        android:layoutDirection="locale"
+        android:orientation="vertical"
+        android:padding="@dimen/_20sdp"
+        android:textDirection="locale">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_500"
+            android:gravity="center"
+            android:text="@string/end_timer"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/_13sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@drawable/bg_dialog_outline_button"
+            android:backgroundTint="@color/color_1C1C1E"
+            android:fontFamily="@font/roboto_400"
+            android:gravity="center_vertical"
+            android:hint="@string/enter_your_time_here"
+            android:imeOptions="actionDone"
+            android:maxLength="150"
+            android:paddingHorizontal="@dimen/_13sdp"
+            android:paddingVertical="@dimen/_13sdp"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textColorHint="#6A6969"
+            android:textSize="@dimen/_11ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvInputText" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btOk"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_marginHorizontal="@dimen/_6sdp"
+                android:layout_marginTop="@dimen/_14sdp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_dialog_negative_button"
+                android:fontFamily="@font/roboto_500"
+                android:gravity="center"
+                android:text="@string/_ok"
+                android:textAllCaps="true"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_14ssp" />
+
+            <TextView
+                android:id="@+id/btCancel"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_marginHorizontal="@dimen/_6sdp"
+                android:layout_marginTop="@dimen/_14sdp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_dialog_outline_button"
+                android:backgroundTint="@color/black"
+                android:fontFamily="@font/roboto_500"
+                android:gravity="center"
+                android:text="@string/cancel"
+                android:textAllCaps="true"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_14ssp" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</FrameLayout>

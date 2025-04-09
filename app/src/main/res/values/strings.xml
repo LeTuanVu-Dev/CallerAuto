@@ -17,4 +17,8 @@
     <string name="anonymous_call">Anonymous call</string>
     <string name="repeat_list">Repeat list</string>
     <string name="redial_from_the_beginning_of_the_list">Redial from the beginning of the list</string>
+    <string name="enter_your_time_here">Enter your time here</string>
+    <string name="_ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="seconds">Seconds</string>
 </resources>

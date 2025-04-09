@@ -118,17 +118,19 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tvEndTime"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:fontFamily="@font/roboto_400"
                             android:includeFontPadding="false"
                             android:text="@string/end_timer"
-                            android:textColor="@color/white"
+                            android:textColor="@color/color_EBEBF5_30"
                             android:textSize="@dimen/_12ssp" />
 
 
                         <TextView
+                            android:id="@+id/tvSubEndTime"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -136,7 +138,7 @@
                             android:includeFontPadding="false"
                             android:layout_marginTop="@dimen/_4sdp"
                             android:text="5 seconds"
-                            android:textColor="#A9AEB8"
+                            android:textColor="@color/color_EBEBF5_30"
                             android:textSize="@dimen/_11ssp" />
 
 
@@ -302,6 +304,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/lnTimerWait"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -328,6 +331,7 @@
 
 
                         <TextView
+                            android:id="@+id/tvTimerWait"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -373,6 +377,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/lnTimeAuto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -388,17 +393,19 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tvEndTime2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:fontFamily="@font/roboto_400"
                             android:includeFontPadding="false"
                             android:text="@string/end_timer"
-                            android:textColor="@color/white"
+                            android:textColor="@color/color_EBEBF5_30"
                             android:textSize="@dimen/_12ssp" />
 
 
                         <TextView
+                            android:id="@+id/tvSubEndTime2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -406,7 +413,7 @@
                             android:includeFontPadding="false"
                             android:layout_marginTop="@dimen/_4sdp"
                             android:text="30 seconds"
-                            android:textColor="#A9AEB8"
+                            android:textColor="@color/color_EBEBF5_30"
                             android:textSize="@dimen/_11ssp" />
 
 
