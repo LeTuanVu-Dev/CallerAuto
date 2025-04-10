@@ -1,3 +1,3 @@
 package com.freelances.callerauto.model
 
-data class ExcelRow(val colA: String?, val colB: String?, val colC: String?)
+data class ExcelRow(val name: String?, val phoneNumber: String?, val nickName: String?)

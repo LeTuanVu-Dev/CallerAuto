@@ -77,11 +77,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                             }
                         } else {
                             // Các dòng còn lại là dữ liệu
-                            val colA = row.getCell(0)?.toString() ?: ""
-                            val colB = row.getCell(1)?.toString() ?: ""
-                            val colC = row.getCell(2)?.toString() ?: ""
+                            val name = row.getCell(0)?.toString() ?: ""
+                            val phoneNumber = row.getCell(1)?.toString() ?: ""
+                            val nickName = row.getCell(2)?.toString() ?: ""
 
-                            val model = ExcelRow(colA, colB, colC)
+                            val model = ExcelRow(name, phoneNumber, nickName)
                             dataList.add(model)
 
                             Log.d("ExcelData", "Row ${rowIndex}: $model")
