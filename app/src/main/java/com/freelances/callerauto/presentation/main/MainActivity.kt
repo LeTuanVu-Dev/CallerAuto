@@ -1,14 +1,22 @@
 package com.freelances.callerauto.presentation.main
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ActivityMainBinding
 import com.freelances.callerauto.model.ExcelRow
+import com.freelances.callerauto.presentation.adapters.DataHomeAdapter
 import com.freelances.callerauto.presentation.bases.BaseActivity
+import com.freelances.callerauto.presentation.dialog.ConfirmDeleteDialog
+import com.freelances.callerauto.presentation.language.LanguageActivity.Companion.selectedPosition
 import com.freelances.callerauto.presentation.setting.SettingActivity
 import com.freelances.callerauto.utils.ext.gone
 import com.freelances.callerauto.utils.ext.safeClick
@@ -21,6 +29,25 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
+    private val dataHomeAdapter: DataHomeAdapter by lazy {
+        DataHomeAdapter(::onItemDataClicked,::onItemDataChanger)
+    }
+
+    private fun onItemDataClicked(position: Int) {
+        selectedPosition = position
+        dataHomeAdapter.toggleSelectedItem(position)
+    }
+
+    private fun onItemDataChanger() {
+        if (dataHomeAdapter.hasSelectedItem()){
+            binding.tvDelete.visible()
+        }
+        else{
+            binding.tvDelete.gone()
+        }
+    }
+
+    private var isSelectAll = false
     override fun initViews() {
         initData()
         initAction()
@@ -28,6 +55,38 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private fun initData() {
         sharedPreference.isDoneFirstOpen = true
+        setUpAdapter()
+        checkShowSelectAll()
+    }
+
+    private fun checkShowSelectAll() {
+        if (dataHomeAdapter.currentList.size <= 0) {
+            binding.lnSelectAll.gone()
+            binding.tvDelete.gone()
+            binding.frCall.gone()
+        } else {
+            binding.lnSelectAll.visible()
+            binding.frCall.visible()
+        }
+    }
+
+    private fun setUpAdapter() {
+        binding.rcvData.apply {
+            adapter = dataHomeAdapter
+        }
+    }
+
+    private lateinit var confirmDeleteDialog: ConfirmDeleteDialog
+    private fun showDialogConfirm() {
+        if (!::confirmDeleteDialog.isInitialized) {
+            confirmDeleteDialog = ConfirmDeleteDialog(this) {
+                dataHomeAdapter.removeAllSelectedItems()
+            }
+        }
+        if (!confirmDeleteDialog.isShowing) {
+            confirmDeleteDialog.show()
+        }
+
     }
 
     private fun initAction() {
@@ -38,14 +97,26 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             frAdd.safeClick {
                 pickExcelFile()
             }
+
+            lnSelectAll.safeClick {
+                isSelectAll = !isSelectAll
+                checkboxAll.setImageResource(if (isSelectAll) R.drawable.ic_checkbox_selected else R.drawable.ic_checkbox_language)
+                dataHomeAdapter.selectAllData(isSelectAll)
+            }
+
+            tvDelete.safeClick {
+                showDialogConfirm()
+            }
+            frCall.safeClick {
+                dataHomeAdapter.currentList.first().nickName?.split(",")?.first()
+                    ?.let { callPhoneNumber(this@MainActivity, it) }
+            }
         }
     }
 
     private val excelFileLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let {
-                Log.d("ExcelFile", "Selected file URI: $uri")
-                // TODO: xử lý file Excel
                 readExcelFile1(uri)
             }
         }
@@ -57,8 +128,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private fun readExcelFile1(uri: Uri) {
         lifecycleScope.launch {
             binding.frLoading.visible()
-            withContext(Dispatchers.IO){
-                try {
+            try {
+                withContext(Dispatchers.IO) {
                     val inputStream = contentResolver.openInputStream(uri)
                     val workbook = WorkbookFactory.create(inputStream)
                     val sheet = workbook.getSheetAt(0)
@@ -73,7 +144,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                                 val cell = row.getCell(colIndex)
                                 val columnName = cell?.toString() ?: "Column$colIndex"
                                 columnNames.add(columnName)
-                                Log.d("ExcelHeader", "col${'A' + colIndex} = $columnName")
                             }
                         } else {
                             // Các dòng còn lại là dữ liệu
@@ -84,26 +154,39 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                             val model = ExcelRow(name, phoneNumber, nickName)
                             dataList.add(model)
 
-                            Log.d("ExcelData", "Row ${rowIndex}: $model")
                         }
                     }
-
+                    withContext(Dispatchers.Main) {
+                        dataHomeAdapter.submitList(dataList)
+                        checkShowSelectAll()
+                    }
+                    Log.d("VuLT", "dataList = ${dataHomeAdapter.currentList}")
                     workbook.close()
                     inputStream?.close()
-
-                    withContext(Dispatchers.Main){
-                        binding.frLoading.gone()
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    withContext(Dispatchers.Main){
-                        binding.frLoading.gone()
-                    }
-                    Toast.makeText(this@MainActivity, "Lỗi khi đọc file Excel", Toast.LENGTH_SHORT).show()
                 }
+                binding.frLoading.gone()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("VuLT", "Exception = ${e.message}")
+                binding.frLoading.gone()
+
+                Toast.makeText(this@MainActivity, "Lỗi khi đọc file Excel", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
+    }
 
+    fun callPhoneNumber(context: Context, phoneNumber: String) {
+        val intent = Intent(Intent.ACTION_CALL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+        }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
+            == PackageManager.PERMISSION_GRANTED) {
+            context.startActivity(intent)
+        } else {
+            Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
+        }
     }
 
 
@@ -120,8 +203,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     cell?.let {
                         when (cell.cellType) {
                             CellType.STRING -> Log.d("ExcelData", "String: ${cell.stringCellValue}")
-                            CellType.NUMERIC -> Log.d("ExcelData", "Numeric: ${cell.numericCellValue}")
-                            CellType.BOOLEAN -> Log.d("ExcelData", "Boolean: ${cell.booleanCellValue}")
+                            CellType.NUMERIC -> Log.d(
+                                "ExcelData",
+                                "Numeric: ${cell.numericCellValue}"
+                            )
+
+                            CellType.BOOLEAN -> Log.d(
+                                "ExcelData",
+                                "Boolean: ${cell.booleanCellValue}"
+                            )
+
                             else -> Log.d("ExcelData", "Other: $cell")
                         }
                     } ?: Log.d("ExcelData", "Cell at column $colIndex is null")
@@ -135,6 +226,4 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             Toast.makeText(this, "Lỗi khi đọc file Excel", Toast.LENGTH_SHORT).show()
         }
     }
-
-
 }

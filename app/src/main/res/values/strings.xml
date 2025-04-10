@@ -29,4 +29,10 @@
     <string name="storage">Storage</string>
     <string name="_continue">Continue</string>
     <string name="permissions_denied">permissions denied</string>
+    <string name="select_all">Select All</string>
+    <string name="_delete">Delete</string>
+    <string name="how_to_delete">How To Delete</string>
+    <string name="are_you_sure_want_delete_item_for_selected">Are you sure want delete item for selected</string>
+    <string name="_no">No</string>
+    <string name="_yes">Yes</string>
 </resources>
