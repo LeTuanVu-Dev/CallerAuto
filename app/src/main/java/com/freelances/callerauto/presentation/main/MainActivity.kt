@@ -118,8 +118,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 showDialogConfirm()
             }
             frCall.safeClick {
-                dataHomeAdapter.currentList.first().nickName?.split(",")?.first()
-                    ?.let { callPhoneNumber(this@MainActivity, it) }
+                startAutoCall(this@MainActivity)
+               /* dataHomeAdapter.currentList.first().nickName?.split(",")?.first()
+                    ?.let { callPhoneNumber(this@MainActivity, it) }*/
             }
         }
     }
@@ -212,13 +213,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             }
         }
     }
+    private val phoneNumbers = listOf("0988761539", "0988761539", "0988761539")
 
-    fun startAutoCall(context: Context) {
+    private fun startAutoCall(context: Context) {
         currentIndex = 0
         isCalling = false
         lifecycleScope.launch {
             CallCoordinator.onCallFinished.collect { callOff ->
                 if (callOff){
+                    if (!sharedPreference.stateAutoEnd) return@collect
+                    currentIndex++
                     delay(sharedPreference.currentTimerEndWaiting * 1000L) // đợi 5s như bạn yêu cầu
                     callNextNumber(context) // Gọi số tiếp theo trong danh sách
                 }
@@ -231,15 +235,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
 
     private fun callNextNumber(context: Context) {
-        if (currentIndex >= dataHomeAdapter.currentList.size) {
+        if (currentIndex >= phoneNumbers.size) {
             Toast.makeText(context, "Đã gọi hết danh sách", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val phoneNumber = dataHomeAdapter.currentList[currentIndex].nickName?.split(",")?.first()
-        if (phoneNumber != null) {
-            callPhoneNumber(context,phoneNumber)
-        }
+
+        val phoneNumber = phoneNumbers[currentIndex]
+        callPhoneNumber(context,phoneNumber)
 
         val intent = Intent(Intent.ACTION_CALL).apply {
             data = Uri.parse("tel:$phoneNumber")

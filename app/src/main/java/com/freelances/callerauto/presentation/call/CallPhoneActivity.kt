@@ -1,10 +1,10 @@
 package com.freelances.callerauto.presentation.call
 
+import CallPhoneManager
 import android.content.Context
 import android.media.AudioManager
 import android.view.View
 import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ActivityCallPhoneBinding
@@ -16,10 +16,12 @@ import com.freelances.callerauto.utils.ext.gone
 import com.freelances.callerauto.utils.ext.safeClick
 import com.freelances.callerauto.utils.ext.visible
 import com.freelances.callerauto.utils.helper.CallCoordinator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CallPhoneActivity :
     BaseActivity<ActivityCallPhoneBinding>(ActivityCallPhoneBinding::inflate) {
@@ -107,12 +109,16 @@ class CallPhoneActivity :
 
     private fun countTimeEndLifted() {
         jobEndLifted?.cancel()
-        jobEndLifted = lifecycleScope.launch {
-            delay(1_000L)
-            currentEndLifted--
-            binding.tvTimeEndAuto.text = formatToHourMinuteSecond(currentEndLifted)
-            if (currentEndLifted == 0){
-                CallPhoneManager.cancelCall()
+        jobEndLifted = lifecycleScope.launch(Dispatchers.Default + Job()) {
+            while (isActive && currentEndLifted > 0) {
+                delay(1_000L)
+                currentEndLifted--
+                withContext(Dispatchers.Main) {
+                    binding.tvTimeEndAuto.text = formatToHourMinuteSecond(currentEndLifted)
+                    if (currentEndLifted == 0) {
+                        CallPhoneManager.cancelCall()
+                    }
+                }
             }
         }
     }
@@ -162,6 +168,7 @@ class CallPhoneActivity :
 
         binding.btnRejectCall.visibility = when (gsmCallModel.status) {
             GsmCallModel.Status.DISCONNECTED -> View.GONE
+            GsmCallModel.Status.DIALING -> View.GONE
             else -> View.VISIBLE
         }
 
@@ -180,8 +187,9 @@ class CallPhoneActivity :
                     isTimerRunning = true
                 }
             }
+
             GsmCallModel.Status.RINGING -> {
-                if (sharedPreference.stateRejectCalls){
+                if (sharedPreference.stateRejectCalls) {
                     CallPhoneManager.cancelCall()
                 }
             }
