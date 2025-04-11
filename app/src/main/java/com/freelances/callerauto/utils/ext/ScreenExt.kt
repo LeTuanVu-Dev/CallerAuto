@@ -18,6 +18,19 @@ fun Context.dpToPx(number: Number): Float {
 fun Context.pxToDp(number: Number): Float {
     return number.toFloat() / (this.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
 }
+fun formatToHourMinuteSecond(totalSeconds: Int): String {
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+
+    return if (hours > 0) {
+        String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    } else {
+        String.format("%02d:%02d", minutes, seconds)
+    }
+}
+
+
 
 fun Context.getWidthScreenPx(): Int {
     return resources.displayMetrics.widthPixels

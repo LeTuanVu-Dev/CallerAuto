@@ -38,6 +38,7 @@ class AppSharedPreference(val sharedPreference: SharedPreferences) {
     var stateAnonymousCall: Boolean by booleanPref("stateAnonymousCall", false)
     var stateRepeatList: Boolean by booleanPref("stateRepeatList", false)
     var stateRedial: Boolean by booleanPref("stateRedial", false)
+
     var currentTimerEndLifted: Int by intPref("currentTimerEndLifted", 5)
     var currentTimerEndAuto: Int by intPref("currentTimerEndAuto", 30)
     var currentTimerEndWaiting: Int by intPref("currentTimerEndWaiting", 4)

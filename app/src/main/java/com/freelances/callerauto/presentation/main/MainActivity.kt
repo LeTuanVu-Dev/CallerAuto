@@ -1,10 +1,12 @@
 package com.freelances.callerauto.presentation.main
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,13 +23,18 @@ import com.freelances.callerauto.presentation.setting.SettingActivity
 import com.freelances.callerauto.utils.ext.gone
 import com.freelances.callerauto.utils.ext.safeClick
 import com.freelances.callerauto.utils.ext.visible
+import com.freelances.callerauto.utils.helper.CallCoordinator
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.WorkbookFactory
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
+
+    private var currentIndex = 0
+    private var isCalling = false
 
     private val dataHomeAdapter: DataHomeAdapter by lazy {
         DataHomeAdapter(::onItemDataClicked,::onItemDataChanger)
@@ -64,9 +71,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             binding.lnSelectAll.gone()
             binding.tvDelete.gone()
             binding.frCall.gone()
+            binding.ivEmpty.visible()
+
         } else {
             binding.lnSelectAll.visible()
             binding.frCall.visible()
+            binding.ivEmpty.gone()
         }
     }
 
@@ -120,10 +130,36 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 readExcelFile1(uri)
             }
         }
+    private val filePickerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uri: Uri? = result.data?.data
+                uri?.let {
+                    // 👇 xử lý file Excel ở đây
+                    readExcelFile1(it)
+                }
+            }
+        }
+
 
     private fun pickExcelFile() {
-        excelFileLauncher.launch("*/*")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ){
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // .xlsx
+                putExtra(Intent.EXTRA_MIME_TYPES, arrayOf(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // xlsx
+                    "application/vnd.ms-excel" // xls
+                ))
+            }
+            filePickerLauncher.launch(intent)
+        }
+        else{
+            excelFileLauncher.launch("*/*")
+        }
     }
+
+
 
     private fun readExcelFile1(uri: Uri) {
         lifecycleScope.launch {
@@ -177,7 +213,50 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
-    fun callPhoneNumber(context: Context, phoneNumber: String) {
+    fun startAutoCall(context: Context) {
+        currentIndex = 0
+        isCalling = false
+        lifecycleScope.launch {
+            CallCoordinator.onCallFinished.collect { callOff ->
+                if (callOff){
+                    delay(sharedPreference.currentTimerEndWaiting * 1000L) // đợi 5s như bạn yêu cầu
+                    callNextNumber(context) // Gọi số tiếp theo trong danh sách
+                }
+            }
+        }
+
+        callNextNumber(context)
+    }
+
+
+
+    private fun callNextNumber(context: Context) {
+        if (currentIndex >= dataHomeAdapter.currentList.size) {
+            Toast.makeText(context, "Đã gọi hết danh sách", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val phoneNumber = dataHomeAdapter.currentList[currentIndex].nickName?.split(",")?.first()
+        if (phoneNumber != null) {
+            callPhoneNumber(context,phoneNumber)
+        }
+
+        val intent = Intent(Intent.ACTION_CALL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            isCalling = true
+            context.startActivity(intent)
+        } else {
+            Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun callPhoneNumber(context: Context, phoneNumber: String) {
         val intent = Intent(Intent.ACTION_CALL).apply {
             data = Uri.parse("tel:$phoneNumber")
         }

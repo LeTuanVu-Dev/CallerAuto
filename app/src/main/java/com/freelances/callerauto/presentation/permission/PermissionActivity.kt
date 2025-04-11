@@ -87,12 +87,12 @@ open class PermissionActivity :
 
     open fun checkToggle() {
         binding.ivToggleCallDefault.isEnabled = !readPhonePermissionGrant(this)
-        binding.ivToggleStorage.isEnabled = !isGrantStoragePermission()
+        binding.ivToggleStorage.isEnabled = (!isGrantStoragePermission() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU )
 
         binding.ivToggleCallDefault.setImageResource(if (readPhonePermissionGrant(this)) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
-        binding.ivToggleStorage.setImageResource(if (isGrantStoragePermission()) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
+        binding.ivToggleStorage.setImageResource(if (isGrantStoragePermission() || ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU )) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
 
-        if (readPhonePermissionGrant(this) && isGrantStoragePermission()) {
+        if (readPhonePermissionGrant(this) && (isGrantStoragePermission() || ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ))) {
             binding.tvContinue.visible()
         }
     }
