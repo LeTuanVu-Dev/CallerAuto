@@ -91,5 +91,5 @@ dependencies {
     annotationProcessor(libs.compiler)
     implementation ("org.apache.poi:poi:5.2.5")
     implementation ("org.apache.poi:poi-ooxml:5.2.5")
-
+    implementation ("com.google.firebase:firebase-firestore-ktx:24.10.3")
 }

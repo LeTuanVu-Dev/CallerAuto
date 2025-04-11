@@ -36,4 +36,8 @@
     <string name="_no">No</string>
     <string name="_yes">Yes</string>
     <string name="auto_end_time">Auto end time:</string>
+    <string name="your_need_key_to_use_app">Your need key to use app</string>
+    <string name="enter_your_key_here">Enter your key here</string>
+    <string name="apply">Apply</string>
+    <string name="login">Login</string>
 </resources>

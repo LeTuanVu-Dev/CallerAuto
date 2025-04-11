@@ -1,5 +1,6 @@
 package com.freelances.callerauto.presentation.adapters
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -91,9 +92,11 @@ class DataHomeAdapter(
             }
         }
 
+        @SuppressLint("SetTextI18n")
         fun bind(item: ExcelRow) {
-            binding.tvName.text = item.name?: ""
-            binding.tvPhoneNumber.text = item.nickName?.split(",")?.first() ?: ""
+            val nameNick = if (item.nickName?.isNotEmpty() == true) "(${item.nickName})" else ""
+            binding.tvName.text = item.name+"\n" + nameNick
+            binding.tvPhoneNumber.text = item.phoneNumber
             updateSelected(item.selected)
         }
 

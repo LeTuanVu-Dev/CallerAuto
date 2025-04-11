@@ -42,6 +42,7 @@ class AppSharedPreference(val sharedPreference: SharedPreferences) {
     var currentTimerEndLifted: Int by intPref("currentTimerEndLifted", 5)
     var currentTimerEndAuto: Int by intPref("currentTimerEndAuto", 30)
     var currentTimerEndWaiting: Int by intPref("currentTimerEndWaiting", 4)
+    var valueLogin: String by stringPref("valueLogin", "")
 
     fun sync() {
         val remoteConfig = Firebase.remoteConfig

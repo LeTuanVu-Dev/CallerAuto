@@ -1,10 +1,12 @@
 package com.freelances.callerauto.presentation.splash
 
+import android.provider.Settings
+import android.util.Log
 import androidx.lifecycle.lifecycleScope
-import com.freelances.callerauto.presentation.language.LanguageActivity
 import com.freelances.callerauto.databinding.ActivitySplashBinding
 import com.freelances.callerauto.presentation.bases.BaseActivity
-import com.freelances.callerauto.presentation.main.MainActivity
+import com.freelances.callerauto.presentation.language.LanguageActivity
+import com.freelances.callerauto.presentation.login.LoginActivity
 import com.freelances.callerauto.remoteconfig.RemoteConfig
 import com.freelances.callerauto.utils.helper.LanguageHelper.preUpdateListLanguage
 import kotlinx.coroutines.delay
@@ -53,7 +55,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
             return
         }
         navigateTo(
-            MainActivity::class.java,
+            LoginActivity::class.java,
             navigationAnimation = null,
             isFinish = true
         )

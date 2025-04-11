@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ActivityPermissionBinding
 import com.freelances.callerauto.presentation.bases.BaseActivity
-import com.freelances.callerauto.presentation.main.MainActivity
+import com.freelances.callerauto.presentation.login.LoginActivity
 import com.freelances.callerauto.utils.device.BackgroundStartPermission
 import com.freelances.callerauto.utils.device.DeviceUtil
 import com.freelances.callerauto.utils.device.PermissionsSettingsUtil.launchAppPermissionsSettings
@@ -87,12 +87,13 @@ open class PermissionActivity :
 
     open fun checkToggle() {
         binding.ivToggleCallDefault.isEnabled = !readPhonePermissionGrant(this)
-        binding.ivToggleStorage.isEnabled = (!isGrantStoragePermission() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU )
+        binding.ivToggleStorage.isEnabled =
+            (!isGrantStoragePermission() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
 
         binding.ivToggleCallDefault.setImageResource(if (readPhonePermissionGrant(this)) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
-        binding.ivToggleStorage.setImageResource(if (isGrantStoragePermission() || ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU )) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
+        binding.ivToggleStorage.setImageResource(if (isGrantStoragePermission() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
 
-        if (readPhonePermissionGrant(this) && (isGrantStoragePermission() || ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ))) {
+        if (readPhonePermissionGrant(this) && (isGrantStoragePermission() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU))) {
             binding.tvContinue.visible()
         }
     }
@@ -104,7 +105,7 @@ open class PermissionActivity :
 
     private fun updateButtonDoneState() {
         binding.tvContinue.safeClick {
-            navigateTo(MainActivity::class.java, isFinish = true)
+            navigateTo(LoginActivity::class.java, isFinish = true)
         }
     }
 
