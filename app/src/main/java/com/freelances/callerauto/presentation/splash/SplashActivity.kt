@@ -1,13 +1,12 @@
 package com.freelances.callerauto.presentation.splash
 
-import android.provider.Settings
-import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import com.freelances.callerauto.databinding.ActivitySplashBinding
 import com.freelances.callerauto.presentation.bases.BaseActivity
 import com.freelances.callerauto.presentation.language.LanguageActivity
 import com.freelances.callerauto.presentation.login.LoginActivity
 import com.freelances.callerauto.remoteconfig.RemoteConfig
+import com.freelances.callerauto.utils.helper.DeviceKeyManager
 import com.freelances.callerauto.utils.helper.LanguageHelper.preUpdateListLanguage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -20,20 +19,17 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         private const val TIME_DELAY = 6_000L
     }
 
-    private val remoteConfig: RemoteConfig by inject()
-
     override fun initViews() {
         lifecycleScope.launch {
-            val job1 = launch {
-                withTimeoutOrNull(TIME_OUT) {
-                    remoteConfig.fetchRemoteData()
-                }
-            }
-            job1.join()
             preUpdateListLanguage()
             checkDoneFirstOpen()
-            delay(TIME_DELAY)
+            checkDataKey()
             moveScreen()
+        }
+    }
+
+    private fun checkDataKey() {
+        DeviceKeyManager.getOrValidateDeviceKey(this, "") { _, _ ->
         }
     }
 

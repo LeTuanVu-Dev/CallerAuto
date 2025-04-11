@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name" translatable="false">Caller Auto</string>
+    <string name="this_action_may_contain_ads">Hành động này có thể chứa quảng cáo</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="settings">Cài đặt</string>
+    <string name="call">Cuộc gọi</string>
+    <string name="end_when_lifted">Kết thúc khi được nhấc lên</string>
+    <string name="end_timer">Kết thúc bộ đếm thời gian</string>
+    <string name="mute_microphone">Tắt tiếng micrô</string>
+    <string name="enable_speaker">Bật loa</string>
+    <string name="hide_caller_name">Ẩn tên người gọi</string>
+    <string name="auto_call">Tự động gọi</string>
+    <string name="start_call_from_position">Bắt đầu cuộc gọi từ vị trí</string>
+    <string name="waiting_time">Thời gian chờ</string>
+    <string name="auto_end">Tự động kết thúc</string>
+    <string name="reject_incoming_calls">Từ chối cuộc gọi đến</string>
+    <string name="anonymous_call">Cuộc gọi ẩn danh</string>
+    <string name="repeat_list">Danh sách lặp lại</string>
+    <string name="redial_from_the_beginning_of_the_list">Gọi lại từ đầu danh sách</string>
+    <string name="enter_your_time_here">Nhập thời gian của bạn tại đây</string>
+    <string name="_ok">Được</string>
+    <string name="cancel">Hủy</string>
+    <string name="seconds">Giây</string>
+    <string name="permission">Quyền</string>
+    <string name="content_permission_1">Vui lòng cấp quyền truy cập</string>
+    <string name="content_permission_2">Ứng dụng này yêu cầu cấp quyền để quản lý cuộc gọi và camera</string>
+    <string name="call_phone">Gọi điện thoại</string>
+    <string name="call_default">Gọi mặc định</string>
+    <string name="storage">Lưu trữ</string>
+    <string name="_continue">Tiếp tục</string>
+    <string name="permissions_denied">quyền bị từ chối</string>
+    <string name="select_all">Chọn tất cả</string>
+    <string name="_delete">Xóa</string>
+    <string name="how_to_delete">Cách xóa</string>
+    <string name="are_you_sure_want_delete_item_for_selected">Bạn có chắc chắn muốn xóa mục đã chọn không</string>
+    <string name="_no">Không</string>
+    <string name="_yes">Có</string>
+    <string name="auto_end_time">Thời gian tự động kết thúc:</string>
+    <string name="your_need_key_to_use_app">Bạn cần khóa để sử dụng ứng dụng</string>
+    <string name="enter_your_key_here">Nhập khóa của bạn tại đây</string>
+    <string name="apply">Áp dụng</string>
+    <string name="login">Đăng nhập</string>
+</resources>

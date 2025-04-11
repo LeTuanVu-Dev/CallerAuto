@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ItemDataBinding
+import com.freelances.callerauto.di.Carrier
 import com.freelances.callerauto.model.ExcelRow
 import com.freelances.callerauto.utils.ext.safeClick
 
@@ -58,13 +59,18 @@ class DataHomeAdapter(
         currentList: MutableList<ExcelRow>
     ) {
         super.onCurrentListChanged(previousList, currentList)
-        onListChanged?.invoke()
+        onListChanged.invoke()
     }
 
 
     fun hasSelectedItem(): Boolean {
         return currentList.any { it.selected }
     }
+
+    fun getListSelected(): List<ExcelRow> {
+        return currentList.filter { it.selected }
+    }
+
 
     fun toggleSelectedItem(position: Int) {
         if (position < 0 || position >= currentList.size) return

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Caller Auto</string>
+    <string name="app_name" translatable="false">Caller Auto</string>
     <string name="this_action_may_contain_ads">This action may contain advertising</string>
     <string name="language">Language</string>
     <string name="settings">Settings</string>
@@ -40,4 +40,5 @@
     <string name="enter_your_key_here">Enter your key here</string>
     <string name="apply">Apply</string>
     <string name="login">Login</string>
+    <string name="search_your_name">Search your name</string>
 </resources>

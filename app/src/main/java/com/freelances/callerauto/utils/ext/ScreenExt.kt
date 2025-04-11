@@ -94,7 +94,15 @@ fun Context.showToast(message: String) {
 fun Context.showToast(messageRes: Int) {
     Toast.makeText(this, this.getString(messageRes), Toast.LENGTH_SHORT).show()
 }
-
+fun hideSoftKeyboard(activity: Activity) {
+    val v = activity.currentFocus
+    if (v != null) {
+        val inputMethodManager =
+            activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(v.applicationWindowToken, 0)
+        v.clearFocus()
+    }
+}
 fun Activity.hideKeyboard() {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager
     inputMethodManager?.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)

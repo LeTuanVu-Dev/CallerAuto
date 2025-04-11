@@ -5,15 +5,27 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ActivityMainBinding
+import com.freelances.callerauto.databinding.LayoutMenuSortBinding
+import com.freelances.callerauto.di.Carrier
 import com.freelances.callerauto.model.ExcelRow
 import com.freelances.callerauto.presentation.adapters.DataHomeAdapter
 import com.freelances.callerauto.presentation.bases.BaseActivity
@@ -21,23 +33,32 @@ import com.freelances.callerauto.presentation.dialog.ConfirmDeleteDialog
 import com.freelances.callerauto.presentation.language.LanguageActivity.Companion.selectedPosition
 import com.freelances.callerauto.presentation.setting.SettingActivity
 import com.freelances.callerauto.utils.ext.gone
+import com.freelances.callerauto.utils.ext.hideSoftKeyboard
 import com.freelances.callerauto.utils.ext.safeClick
+import com.freelances.callerauto.utils.ext.tap
 import com.freelances.callerauto.utils.ext.visible
 import com.freelances.callerauto.utils.helper.CallCoordinator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.WorkbookFactory
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
+    companion object {
+        var displayName = ""
+        var phoneNumber = ""
+    }
+
     private var currentIndex = 0
     private var isCalling = false
+    private var dataList = mutableListOf<ExcelRow>()
+    private var filteredList = arrayListOf<ExcelRow>()
 
     private val dataHomeAdapter: DataHomeAdapter by lazy {
-        DataHomeAdapter(::onItemDataClicked,::onItemDataChanger)
+        DataHomeAdapter(::onItemDataClicked, ::onItemDataChanger)
     }
 
     private fun onItemDataClicked(position: Int) {
@@ -46,10 +67,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun onItemDataChanger() {
-        if (dataHomeAdapter.hasSelectedItem()){
+        if (dataHomeAdapter.hasSelectedItem()) {
             binding.tvDelete.visible()
-        }
-        else{
+        } else {
             binding.tvDelete.gone()
         }
     }
@@ -71,11 +91,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             binding.lnSelectAll.gone()
             binding.tvDelete.gone()
             binding.frCall.gone()
+            binding.ivSort.gone()
+            binding.frSearch.gone()
             binding.ivEmpty.visible()
 
         } else {
             binding.lnSelectAll.visible()
             binding.frCall.visible()
+            binding.frSearch.visible()
+            binding.ivSort.visible()
             binding.ivEmpty.gone()
         }
     }
@@ -90,6 +114,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private fun showDialogConfirm() {
         if (!::confirmDeleteDialog.isInitialized) {
             confirmDeleteDialog = ConfirmDeleteDialog(this) {
+                val updatedList = dataList.filter { it.selected }
+                dataList.removeAll(updatedList)
                 dataHomeAdapter.removeAllSelectedItems()
             }
         }
@@ -118,10 +144,47 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 showDialogConfirm()
             }
             frCall.safeClick {
+                if (!dataHomeAdapter.hasSelectedItem()){
+                    Toast.makeText(this@MainActivity, "Bạn chưa chọn số nào", Toast.LENGTH_SHORT).show()
+                    return@safeClick
+                }
+                currentIndex = 0
                 startAutoCall(this@MainActivity)
-               /* dataHomeAdapter.currentList.first().nickName?.split(",")?.first()
-                    ?.let { callPhoneNumber(this@MainActivity, it) }*/
             }
+
+            ivSort.tap {
+                showPopupMenuSort(ivSort)
+            }
+            frSearch.tap {
+                lnSearch.visible()
+                frSearch.gone()
+            }
+
+            tvCancel.tap {
+                frSearch.visible()
+                lnSearch.gone()
+                hideSoftKeyboard(this@MainActivity)
+                edtInputSearch.setText("")
+                dataHomeAdapter.submitList(dataList)
+            }
+
+            edtInputSearch.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    Log.d("VuLT", "onTextChanged: s = $s")
+                    filterWithSearch(s.toString().trim())
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                }
+            })
         }
     }
 
@@ -144,22 +207,22 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
 
     private fun pickExcelFile() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // .xlsx
-                putExtra(Intent.EXTRA_MIME_TYPES, arrayOf(
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // xlsx
-                    "application/vnd.ms-excel" // xls
-                ))
+                putExtra(
+                    Intent.EXTRA_MIME_TYPES, arrayOf(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // xlsx
+                        "application/vnd.ms-excel" // xls
+                    )
+                )
             }
             filePickerLauncher.launch(intent)
-        }
-        else{
+        } else {
             excelFileLauncher.launch("*/*")
         }
     }
-
 
 
     private fun readExcelFile1(uri: Uri) {
@@ -172,8 +235,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     val sheet = workbook.getSheetAt(0)
 
                     val columnNames = mutableListOf<String>()
-                    val dataList = mutableListOf<ExcelRow>()
-
+                    dataList = arrayListOf()
                     for ((rowIndex, row) in sheet.withIndex()) {
                         if (rowIndex == 0) {
                             // Dòng đầu tiên là tiêu đề
@@ -187,8 +249,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                             val name = row.getCell(0)?.toString() ?: ""
                             val phoneNumber = row.getCell(1)?.toString() ?: ""
                             val nickName = row.getCell(2)?.toString() ?: ""
-
-                            val model = ExcelRow(name, phoneNumber, nickName)
+                            val type = getCarrierFromPhoneNumber(phoneNumber)
+                            val model = ExcelRow(name, phoneNumber, nickName, type)
                             dataList.add(model)
 
                         }
@@ -213,41 +275,58 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             }
         }
     }
-    private val phoneNumbers = listOf("0988761539", "0988761539", "0988761539")
+
+    private fun getCarrierFromPhoneNumber(phone: String): Carrier {
+        val normalizedPhone = phone.replace("+84", "0")
+        val prefix = normalizedPhone.take(3)
+
+        return when (prefix) {
+            in listOf("032", "033", "034", "035", "036", "037", "038", "039") -> Carrier.VIETTEL
+            in listOf("070", "076", "077", "078", "079") -> Carrier.MOBIFONE
+            in listOf("081", "082", "083", "084", "085", "088", "089") -> Carrier.VINAPHONE
+            in listOf("056", "058") -> Carrier.VIETNAMOBILE
+            in listOf("059") -> Carrier.GMOBILE
+            else -> Carrier.UNKNOWN
+        }
+    }
+
 
     private fun startAutoCall(context: Context) {
         currentIndex = 0
         isCalling = false
         lifecycleScope.launch {
             CallCoordinator.onCallFinished.collect { callOff ->
-                if (callOff){
-                    if (!sharedPreference.stateAutoEnd) return@collect
-                    currentIndex++
+                if (callOff) {
+                    isCalling = true
+                    if (!sharedPreference.stateRepeatList) return@collect
                     delay(sharedPreference.currentTimerEndWaiting * 1000L) // đợi 5s như bạn yêu cầu
-                    callNextNumber(context) // Gọi số tiếp theo trong danh sách
+                    if (isActive) {
+                        currentIndex++
+                        callNextNumber(context) // Gọi số tiếp theo trong danh sách
+                    }
                 }
             }
         }
-
         callNextNumber(context)
     }
 
 
-
     private fun callNextNumber(context: Context) {
-        if (currentIndex >= phoneNumbers.size) {
+        if (currentIndex >= dataHomeAdapter.getListSelected().size) {
             Toast.makeText(context, "Đã gọi hết danh sách", Toast.LENGTH_SHORT).show()
             return
         }
 
+        phoneNumber = dataHomeAdapter.getListSelected()[currentIndex].phoneNumber.toString()
+        displayName = dataHomeAdapter.getListSelected()[currentIndex].name.toString()
+        callPhoneNumber(context, phoneNumber)
+    }
 
-        val phoneNumber = phoneNumbers[currentIndex]
-        callPhoneNumber(context,phoneNumber)
 
+    private fun callPhoneNumber(context: Context, phoneNumber: String) {
         val intent = Intent(Intent.ACTION_CALL).apply {
             data = Uri.parse("tel:$phoneNumber")
         }
-
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
             == PackageManager.PERMISSION_GRANTED
         ) {
@@ -258,54 +337,90 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
+    private fun showPopupMenuSort(view: View) {
+        val layoutInflater = LayoutInflater.from(this)
+        val binding1 = LayoutMenuSortBinding.inflate(layoutInflater)
+        val popupMenu = PopupWindow(this)
+        popupMenu.contentView = binding1.root
+        popupMenu.width = LinearLayout.LayoutParams.WRAP_CONTENT
+        popupMenu.height = LinearLayout.LayoutParams.WRAP_CONTENT
+        popupMenu.isFocusable = true
+        popupMenu.isOutsideTouchable = true
+        popupMenu.elevation = 100f
 
-    private fun callPhoneNumber(context: Context, phoneNumber: String) {
-        val intent = Intent(Intent.ACTION_CALL).apply {
-            data = Uri.parse("tel:$phoneNumber")
-        }
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
-            == PackageManager.PERMISSION_GRANTED) {
-            context.startActivity(intent)
+        popupMenu.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        // Đo kích thước của PopupWindow để tính toán chiều cao cần thiết
+        binding1.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val popupHeight = binding1.root.measuredHeight
+
+        // Lấy vị trí của view gốc trên màn hình
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        val yPos = location[1] + view.height // Vị trí y của view gốc
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+        // Kiểm tra nếu không gian phía dưới không đủ để hiển thị toàn bộ PopupWindow
+        if (yPos + popupHeight > screenHeight) {
+            // Hiển thị PopupWindow phía trên view gốc nếu không đủ không gian bên dưới
+            popupMenu.showAsDropDown(view, -350, -(popupHeight + view.height), Gravity.NO_GRAVITY)
         } else {
-            Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
+            // Hiển thị PopupWindow phía dưới view gốc nếu đủ không gian
+            popupMenu.showAsDropDown(view, -350, 30, Gravity.NO_GRAVITY)
         }
+
+        binding1.lnAll.safeClick {
+            dataHomeAdapter.submitList(dataList)
+            popupMenu.dismiss()
+        }
+        binding1.lnGmobile.safeClick {
+            val lit = dataList.filter { it.type == Carrier.GMOBILE }
+            dataHomeAdapter.submitList(lit)
+            popupMenu.dismiss()
+        }
+
+        binding1.lnVt.safeClick {
+            val lit = dataList.filter { it.type == Carrier.VIETTEL }
+            dataHomeAdapter.submitList(lit)
+            popupMenu.dismiss()
+        }
+
+        binding1.lnVNM.safeClick {
+            val lit = dataList.filter { it.type == Carrier.VIETNAMOBILE }
+            dataHomeAdapter.submitList(lit)
+            popupMenu.dismiss()
+        }
+
+        binding1.lnVina.safeClick {
+            val lit = dataList.filter { it.type == Carrier.VIETNAMOBILE }
+            dataHomeAdapter.submitList(lit)
+            popupMenu.dismiss()
+        }
+
+        binding1.lnMB.safeClick {
+            val lit = dataList.filter { it.type == Carrier.VIETNAMOBILE }
+            dataHomeAdapter.submitList(lit)
+            popupMenu.dismiss()
+        }
+
+        popupMenu.showAsDropDown(view, -350, 30, Gravity.NO_GRAVITY)
     }
 
-
-    private fun readExcelFile(uri: Uri) {
-        try {
-            val inputStream = contentResolver.openInputStream(uri)
-            val workbook = WorkbookFactory.create(inputStream)
-
-            val sheet = workbook.getSheetAt(0) // Lấy sheet đầu tiên
-
-            for (row in sheet) {
-                for (colIndex in 0..2) { // Chỉ lấy 3 cột đầu tiên
-                    val cell = row.getCell(colIndex)
-                    cell?.let {
-                        when (cell.cellType) {
-                            CellType.STRING -> Log.d("ExcelData", "String: ${cell.stringCellValue}")
-                            CellType.NUMERIC -> Log.d(
-                                "ExcelData",
-                                "Numeric: ${cell.numericCellValue}"
-                            )
-
-                            CellType.BOOLEAN -> Log.d(
-                                "ExcelData",
-                                "Boolean: ${cell.booleanCellValue}"
-                            )
-
-                            else -> Log.d("ExcelData", "Other: $cell")
-                        }
-                    } ?: Log.d("ExcelData", "Cell at column $colIndex is null")
+    private fun filterWithSearch(query: String) {
+        filteredList.clear()
+        if (query.isEmpty()) {
+            filteredList.addAll(dataList)
+            Log.d("VuLT", "filterWithSearch: query = $filteredList")
+        } else {
+            val lowerCaseQuery = query.lowercase()
+            Log.d("VuLT", "filterWithSearch: query = $lowerCaseQuery")
+            for (item in dataList) {
+                if (item.name?.lowercase()?.contains(lowerCaseQuery) == true) {
+                    Log.d("VuLT", "filterWithSearch:1")
+                    filteredList.add(item)
                 }
             }
-
-            workbook.close()
-            inputStream?.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Lỗi khi đọc file Excel", Toast.LENGTH_SHORT).show()
         }
+        Log.d("VuLT", "filterWithSearch: quer2")
+        dataHomeAdapter.submitList(filteredList.toMutableList())
     }
 }

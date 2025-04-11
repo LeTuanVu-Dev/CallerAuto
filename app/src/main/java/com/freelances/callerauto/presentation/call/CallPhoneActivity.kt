@@ -10,6 +10,8 @@ import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ActivityCallPhoneBinding
 import com.freelances.callerauto.model.GsmCallModel
 import com.freelances.callerauto.presentation.bases.BaseActivity
+import com.freelances.callerauto.presentation.main.MainActivity.Companion.displayName
+import com.freelances.callerauto.presentation.main.MainActivity.Companion.phoneNumber
 import com.freelances.callerauto.presentation.service.CallPhoneService
 import com.freelances.callerauto.utils.ext.formatToHourMinuteSecond
 import com.freelances.callerauto.utils.ext.gone
@@ -205,8 +207,8 @@ class CallPhoneActivity :
             else -> Unit
         }
 
-        binding.textDisplayName.text = gsmCallModel.displayName ?: "Unknown"
-        binding.phoneNumber.text = gsmCallModel.nickName?.split(",")?.first() ?: "Unknown"
+        binding.textDisplayName.text = displayName.ifEmpty { gsmCallModel.displayName?:"Unknown" }
+        binding.phoneNumber.text = phoneNumber.ifEmpty { gsmCallModel.phoneNumber?:"Unknown" }
 
         binding.btnAcceptCall.visibility = when (gsmCallModel.status) {
             GsmCallModel.Status.RINGING -> View.VISIBLE

@@ -48,36 +48,38 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-<LinearLayout
-    android:id="@+id/lnSelectAll"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/_13sdp"
-    android:layout_marginHorizontal="@dimen/_13sdp"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/appBar"
-    android:orientation="horizontal">
-    <com.google.android.material.textview.MaterialTextView
+    <LinearLayout
+        android:id="@+id/lnSelectAll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:fontFamily="@font/roboto_500"
-        android:gravity="center_vertical"
-        android:text="@string/select_all"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_13ssp"
-       />
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/checkboxAll"
-        android:layout_width="@dimen/_23sdp"
-        android:layout_height="@dimen/_26sdp"
-        android:layout_gravity="center"
-        android:padding="@dimen/_3sdp"
-        android:src="@drawable/ic_checkbox_language"
-        />
+        android:layout_marginHorizontal="@dimen/_13sdp"
+        android:layout_marginTop="@dimen/_13sdp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBar">
 
-</LinearLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:fontFamily="@font/roboto_500"
+            android:gravity="center_vertical"
+            android:text="@string/select_all"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_13ssp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/checkboxAll"
+            android:layout_width="@dimen/_23sdp"
+            android:layout_height="@dimen/_26sdp"
+            android:layout_gravity="center"
+            android:padding="@dimen/_3sdp"
+            android:src="@drawable/ic_checkbox_language"
+
+            />
+
+    </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvDelete"
@@ -90,22 +92,93 @@
         android:text="@string/_delete"
         android:textColor="@color/color_red"
         android:textSize="@dimen/_13ssp"
-        app:layout_constraintTop_toTopOf="@id/lnSelectAll"
+        app:layout_constraintBottom_toBottomOf="@id/lnSelectAll"
+        app:layout_constraintEnd_toStartOf="@+id/ivSort"
+        app:layout_constraintTop_toTopOf="@id/lnSelectAll" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivSort"
+        android:layout_width="@dimen/_26sdp"
+        android:layout_height="@dimen/_26sdp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:padding="@dimen/_3sdp"
+        android:src="@drawable/ic_sort"
+        android:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/lnSelectAll"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="@id/lnSelectAll" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/lnSearch"
+        android:visibility="gone"
+        android:layout_marginHorizontal="@dimen/_13sdp"
+        app:layout_constraintTop_toBottomOf="@id/lnSelectAll"
+        >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:background="@drawable/bg_input_search"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_10sdp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/_8sdp"
+                android:src="@drawable/ic_search"
+                app:tint="#828282" />
+
+            <EditText
+                android:id="@+id/edtInputSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionDone"
+                android:background="#F4F4F4"
+                android:inputType="text"
+                android:fontFamily="@font/roboto_500"
+                android:hint="@string/search_your_name"
+                android:includeFontPadding="false"
+                android:textColor="@color/black"
+                android:textColorHint="@color/color_A9AEB8"
+                android:textSize="@dimen/_12ssp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="@dimen/_8sdp"
+            android:fontFamily="@font/roboto_400"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/cancel"
+            android:textColor="#fff"
+            android:textSize="@dimen/_12ssp" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcvData"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/_13sdp"
-        android:paddingBottom="@dimen/_100sdp"
         android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
-        tools:listitem="@layout/item_data"
-        app:layout_constraintTop_toBottomOf="@id/lnSelectAll"
+        android:paddingBottom="@dimen/_100sdp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lnSearch"
+        tools:listitem="@layout/item_data"
 
         />
 
@@ -114,41 +187,59 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:src="@drawable/img_empty"
-        app:layout_constraintTop_toBottomOf="@id/appBar"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/frAdd"
-        />
+        app:layout_constraintTop_toBottomOf="@id/appBar" />
 
     <FrameLayout
         android:id="@+id/frAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_fab"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="@dimen/_10sdp"
         android:layout_marginHorizontal="@dimen/_20sdp"
         android:layout_marginBottom="@dimen/_30sdp"
+        android:background="@drawable/bg_fab"
+        android:padding="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
         <androidx.constraintlayout.utils.widget.ImageFilterView
             android:layout_width="@dimen/_24sdp"
             android:layout_height="@dimen/_24sdp"
-            android:src="@drawable/ic_term"
-            />
+            android:src="@drawable/ic_term" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/frSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:background="@drawable/bg_fab"
+        android:padding="@dimen/_10sdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/frAdd"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:src="@drawable/ic_search" />
     </FrameLayout>
 
     <FrameLayout
         android:id="@+id/frCall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginHorizontal="@dimen/_20sdp"
         android:layout_marginBottom="@dimen/_30sdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
         <androidx.constraintlayout.utils.widget.ImageFilterView
             android:layout_width="@dimen/_44sdp"
             android:layout_height="@dimen/_44sdp"
-            android:src="@drawable/it_action_accept_6"
-            />
+            android:src="@drawable/it_action_accept_6" />
     </FrameLayout>
 
     <FrameLayout
@@ -158,14 +249,13 @@
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/appBar"
         app:layout_constraintBottom_toBottomOf="parent"
-        >
+        app:layout_constraintTop_toBottomOf="@id/appBar">
+
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            />
+            android:layout_gravity="center" />
     </FrameLayout>
 
 
