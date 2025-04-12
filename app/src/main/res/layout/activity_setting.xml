@@ -102,51 +102,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/lnEndTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingVertical="@dimen/_10sdp">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="@dimen/_8sdp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvEndTime"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:fontFamily="@font/roboto_400"
-                            android:includeFontPadding="false"
-                            android:text="@string/end_timer"
-                            android:textColor="@color/color_EBEBF5_30"
-                            android:textSize="@dimen/_12ssp" />
-
-
-                        <TextView
-                            android:id="@+id/tvSubEndTime"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:fontFamily="@font/roboto_400"
-                            android:includeFontPadding="false"
-                            android:layout_marginTop="@dimen/_4sdp"
-                            android:text="5 seconds"
-                            android:textColor="@color/color_EBEBF5_30"
-                            android:textSize="@dimen/_11ssp" />
-
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/lnMicro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -267,6 +222,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:orientation="horizontal"
+
                     android:paddingVertical="@dimen/_10sdp">
 
                     <LinearLayout
@@ -509,10 +465,56 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/lnNumberRepeat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_10sdp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_8sdp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="@font/roboto_400"
+                            android:includeFontPadding="false"
+                            android:text="Số lần lặp"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_12ssp" />
+
+
+                        <TextView
+                            android:id="@+id/tvNumberRepeat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="@font/roboto_400"
+                            android:includeFontPadding="false"
+                            android:layout_marginTop="@dimen/_4sdp"
+                            android:text="5"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_11ssp" />
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:paddingVertical="@dimen/_10sdp">
 
                     <TextView

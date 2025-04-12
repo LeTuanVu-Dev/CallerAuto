@@ -148,14 +148,14 @@
         android:id="@+id/tvContinue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:fontFamily="@font/roboto_500"
         android:gravity="center"
         android:visibility="gone"
         android:text="@string/_continue"
         android:textColor="@color/color_63E6E2"
         android:textSize="@dimen/_11ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lnPermissionNoty"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

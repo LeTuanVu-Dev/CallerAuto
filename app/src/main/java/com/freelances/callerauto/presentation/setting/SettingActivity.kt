@@ -22,7 +22,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
     }
 
     private fun initData() {
-        updateTimerLifted(sharedPreference.currentTimerEndLifted.toString())
+        updateNumberRepeat(sharedPreference.currentNumberRepeat.toString())
         updateTimerAuto(sharedPreference.currentTimerEndAuto.toString())
         updateTimerWait(sharedPreference.currentTimerEndWaiting.toString())
         binding.apply {
@@ -36,19 +36,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
             setUpState(sharedPreference.stateRepeatList, ivToggleRepeat)
             setUpState(sharedPreference.stateRedial, ivToggleRedial)
         }
-        // Update màu chữ theo trạng thái
-        binding.tvEndTime.setTextColor(
-            ContextCompat.getColor(
-                this@SettingActivity,
-                setEnableView(sharedPreference.stateEndLifted)
-            )
-        )
-        binding.tvSubEndTime.setTextColor(
-            ContextCompat.getColor(
-                this@SettingActivity,
-                setEnableSubView(sharedPreference.stateEndLifted)
-            )
-        )
         binding.tvEndTime2.setTextColor(
             ContextCompat.getColor(
                 this@SettingActivity,
@@ -73,18 +60,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
                     currentState = sharedPreference.stateEndLifted,
                     onToggle = { sharedPreference.stateEndLifted = it },
                     imageView = ivToggleEndLifted
-                )
-                tvEndTime.setTextColor(
-                    ContextCompat.getColor(
-                        this@SettingActivity,
-                        setEnableView(sharedPreference.stateEndLifted)
-                    )
-                )
-                tvSubEndTime.setTextColor(
-                    ContextCompat.getColor(
-                        this@SettingActivity,
-                        setEnableSubView(sharedPreference.stateEndLifted)
-                    )
                 )
             }
 
@@ -165,9 +140,8 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
                 )
             }
 
-            lnEndTime.safeClick {
-                if (!sharedPreference.stateEndLifted) return@safeClick
-                showInputTimerDialog(sharedPreference.currentTimerEndLifted.toString())
+            lnNumberRepeat.safeClick {
+                showInputTimerDialog(sharedPreference.currentNumberRepeat.toString())
             }
 
             lnTimerWait.safeClick {
@@ -184,7 +158,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
 
     private val dialogInputTimerLiftedListener by lazy {
         EndTimerInputDialog.newInstance { timer ->
-            updateTimerLifted(timer)
+            updateNumberRepeat(timer)
         }
     }
 
@@ -200,9 +174,9 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
         }
     }
 
-    private fun updateTimerLifted(timer: String) {
-        sharedPreference.currentTimerEndLifted = timer.toInt()
-        binding.tvSubEndTime.text = timer + " ${getString(R.string.seconds)}"
+    private fun updateNumberRepeat(timer: String) {
+        sharedPreference.currentNumberRepeat = timer.toInt()
+        binding.tvNumberRepeat.text = timer
     }
 
     private fun updateTimerAuto(timer: String) {

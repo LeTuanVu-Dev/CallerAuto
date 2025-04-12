@@ -12,22 +12,27 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
 
     override fun initViews() {
         if (sharedPreference.valueLogin.isNotEmpty()) {
-            navigateTo(MainActivity::class.java, isFinish = true)
+            checkLogin(sharedPreference.valueLogin)
         }
+
         binding.tvApply.tap {
             hideKeyboard()
             val input = binding.edInput.text.toString().trim()
-            DeviceKeyManager.getOrValidateDeviceKey(this, input) { success, key ->
-                if (success) {
-                    sharedPreference.valueLogin = input
-                    Toast.makeText(this, "Đăng nhập thành công với key: $key", Toast.LENGTH_SHORT)
-                        .show()
-                    // Cho truy cập app
-                    navigateTo(MainActivity::class.java, isFinish = true)
-                } else {
-                    Toast.makeText(this, "Sai key hoặc chưa có quyền truy cập", Toast.LENGTH_SHORT)
-                        .show()
-                }
+            checkLogin(input)
+        }
+    }
+
+    private fun checkLogin(input:String){
+        DeviceKeyManager.getOrValidateDeviceKey(this, input) { success, key ->
+            if (success) {
+                sharedPreference.valueLogin = input
+                Toast.makeText(this, "Đăng nhập thành công với key: $key", Toast.LENGTH_SHORT)
+                    .show()
+                // Cho truy cập app
+                navigateTo(MainActivity::class.java, isFinish = true)
+            } else {
+                Toast.makeText(this, "Sai key hoặc chưa có quyền truy cập", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }

@@ -25,11 +25,14 @@ import androidx.lifecycle.lifecycleScope
 import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ActivityMainBinding
 import com.freelances.callerauto.databinding.LayoutMenuSortBinding
+import com.freelances.callerauto.databinding.LayoutMoreBinding
 import com.freelances.callerauto.di.Carrier
 import com.freelances.callerauto.model.ExcelRow
 import com.freelances.callerauto.presentation.adapters.DataHomeAdapter
 import com.freelances.callerauto.presentation.bases.BaseActivity
 import com.freelances.callerauto.presentation.dialog.ConfirmDeleteDialog
+import com.freelances.callerauto.presentation.dialog.CountTimeReCallDialog
+import com.freelances.callerauto.presentation.dialog.RenameDialog
 import com.freelances.callerauto.presentation.language.LanguageActivity.Companion.selectedPosition
 import com.freelances.callerauto.presentation.setting.SettingActivity
 import com.freelances.callerauto.utils.ext.gone
@@ -39,7 +42,6 @@ import com.freelances.callerauto.utils.ext.tap
 import com.freelances.callerauto.utils.ext.visible
 import com.freelances.callerauto.utils.helper.CallCoordinator
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,12 +55,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private var currentIndex = 0
+    private var currentRepeat = 0
     private var isCalling = false
     private var dataList = mutableListOf<ExcelRow>()
     private var filteredList = arrayListOf<ExcelRow>()
+    private var isStopped = false
 
     private val dataHomeAdapter: DataHomeAdapter by lazy {
-        DataHomeAdapter(::onItemDataClicked, ::onItemDataChanger)
+        DataHomeAdapter(::onItemDataClicked, ::onItemDataChanger) { view, item ->
+            showPopupMore(view, item)
+        }
     }
 
     private fun onItemDataClicked(position: Int) {
@@ -110,6 +116,27 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
+    private fun showDialogCountTime() {
+        val countTimeReCallDialog = CountTimeReCallDialog(this, actionTimeDone = {
+            lifecycleScope.launch {
+                isCalling = true
+                if (isActive) {
+                    currentIndex++
+                    callNextNumber(this@MainActivity) // Gọi số tiếp theo trong danh sách
+                }
+            }
+
+        }, onCancelClick = {
+            stopAutoCall()
+        })
+        if (!countTimeReCallDialog.isShowing) {
+            countTimeReCallDialog.setTimeCount(sharedPreference.currentTimerEndWaiting)
+            countTimeReCallDialog.show()
+        }
+
+    }
+
+
     private lateinit var confirmDeleteDialog: ConfirmDeleteDialog
     private fun showDialogConfirm() {
         if (!::confirmDeleteDialog.isInitialized) {
@@ -144,10 +171,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 showDialogConfirm()
             }
             frCall.safeClick {
-                if (!dataHomeAdapter.hasSelectedItem()){
-                    Toast.makeText(this@MainActivity, "Bạn chưa chọn số nào", Toast.LENGTH_SHORT).show()
+                if (!dataHomeAdapter.hasSelectedItem()) {
+                    Toast.makeText(this@MainActivity, "Bạn chưa chọn số nào", Toast.LENGTH_SHORT)
+                        .show()
                     return@safeClick
                 }
+                currentRepeat = sharedPreference.currentNumberRepeat
                 currentIndex = 0
                 startAutoCall(this@MainActivity)
             }
@@ -155,6 +184,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             ivSort.tap {
                 showPopupMenuSort(ivSort)
             }
+
             frSearch.tap {
                 lnSearch.visible()
                 frSearch.gone()
@@ -250,7 +280,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                             val phoneNumber = row.getCell(1)?.toString() ?: ""
                             val nickName = row.getCell(2)?.toString() ?: ""
                             val type = getCarrierFromPhoneNumber(phoneNumber)
-                            val model = ExcelRow(name, phoneNumber, nickName, type)
+                            val model = ExcelRow(
+                                name = name,
+                                phoneNumber = phoneNumber,
+                                nickName = nickName,
+                                type = type
+                            )
                             dataList.add(model)
 
                         }
@@ -294,16 +329,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private fun startAutoCall(context: Context) {
         currentIndex = 0
         isCalling = false
+        isStopped = false // Bắt đầu lại thì không dừng nữa
         lifecycleScope.launch {
             CallCoordinator.onCallFinished.collect { callOff ->
                 if (callOff) {
-                    isCalling = true
-                    if (!sharedPreference.stateRepeatList) return@collect
-                    delay(sharedPreference.currentTimerEndWaiting * 1000L) // đợi 5s như bạn yêu cầu
-                    if (isActive) {
-                        currentIndex++
-                        callNextNumber(context) // Gọi số tiếp theo trong danh sách
+                    if (currentIndex < dataHomeAdapter.getListSelected().size || (sharedPreference.stateRepeatList && currentRepeat > 0)) {
+                        showDialogCountTime()
                     }
+
                 }
             }
         }
@@ -312,14 +345,26 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
 
     private fun callNextNumber(context: Context) {
+        if (isStopped) return // Nếu đã dừng thì không gọi nữa
         if (currentIndex >= dataHomeAdapter.getListSelected().size) {
             Toast.makeText(context, "Đã gọi hết danh sách", Toast.LENGTH_SHORT).show()
-            return
+            if (sharedPreference.stateRepeatList && currentRepeat > 0) {
+                currentIndex = 0
+                currentRepeat--
+            } else {
+                return
+            }
         }
 
         phoneNumber = dataHomeAdapter.getListSelected()[currentIndex].phoneNumber.toString()
         displayName = dataHomeAdapter.getListSelected()[currentIndex].name.toString()
         callPhoneNumber(context, phoneNumber)
+    }
+
+    private fun stopAutoCall() {
+        isStopped = true
+        isCalling = false
+        currentRepeat = 0
     }
 
 
@@ -336,6 +381,80 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
         }
     }
+
+
+    private fun showRenameDialog(textCurrent: String, item: ExcelRow, type: String) {
+        val dialogInputNewDataListener = RenameDialog.newInstance { newName ->
+            Log.d("VuLT", "showRenameDialog: type = $type")
+            when (type) {
+                "name" -> {
+                    dataHomeAdapter.rename(item, newName)
+                }
+
+                "nickName" -> {
+                    dataHomeAdapter.reNickname(item, newName)
+                }
+
+                else -> {
+                    dataHomeAdapter.rePhoneNumber(item, newName)
+                }
+            }
+        }
+        dialogInputNewDataListener.setTimeCurrent(textCurrent)
+        dialogInputNewDataListener.show(
+            supportFragmentManager,
+            "show_gotoSetting_listener"
+        )
+    }
+
+    private fun showPopupMore(view: View, item: ExcelRow) {
+        val layoutInflater = LayoutInflater.from(this)
+        val binding1 = LayoutMoreBinding.inflate(layoutInflater)
+        val popupMenu = PopupWindow(this)
+        popupMenu.contentView = binding1.root
+        popupMenu.width = LinearLayout.LayoutParams.WRAP_CONTENT
+        popupMenu.height = LinearLayout.LayoutParams.WRAP_CONTENT
+        popupMenu.isFocusable = true
+        popupMenu.isOutsideTouchable = true
+        popupMenu.elevation = 100f
+
+        popupMenu.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        // Đo kích thước của PopupWindow để tính toán chiều cao cần thiết
+        binding1.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val popupHeight = binding1.root.measuredHeight
+
+        // Lấy vị trí của view gốc trên màn hình
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        val yPos = location[1] + view.height // Vị trí y của view gốc
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+        // Kiểm tra nếu không gian phía dưới không đủ để hiển thị toàn bộ PopupWindow
+        if (yPos + popupHeight > screenHeight) {
+            // Hiển thị PopupWindow phía trên view gốc nếu không đủ không gian bên dưới
+            popupMenu.showAsDropDown(view, -350, -(popupHeight + view.height), Gravity.NO_GRAVITY)
+        } else {
+            // Hiển thị PopupWindow phía dưới view gốc nếu đủ không gian
+            popupMenu.showAsDropDown(view, -350, 30, Gravity.NO_GRAVITY)
+        }
+
+        binding1.lnName.safeClick {
+            showRenameDialog(item.name ?: "", item, "name")
+            popupMenu.dismiss()
+        }
+        binding1.lnNickName.safeClick {
+            showRenameDialog(item.nickName ?: "", item, "nickName")
+            popupMenu.dismiss()
+        }
+        binding1.lnPhone.safeClick {
+            showRenameDialog(item.phoneNumber ?: "", item, "phone")
+
+            popupMenu.dismiss()
+        }
+
+        popupMenu.showAsDropDown(view, -350, 30, Gravity.NO_GRAVITY)
+    }
+
 
     private fun showPopupMenuSort(view: View) {
         val layoutInflater = LayoutInflater.from(this)

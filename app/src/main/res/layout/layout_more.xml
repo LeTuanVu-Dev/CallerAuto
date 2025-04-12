@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingVertical="@dimen/_10sdp"
+    android:background="@drawable/bg_item_setting"
+    android:backgroundTint="@color/white"
+    android:clickable="true"
+    android:focusable="true"
+    android:elevation="@dimen/_10sdp"
+    android:paddingHorizontal="@dimen/_6sdp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/lnName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/_4sdp"
+        android:paddingStart="@dimen/_6ssp"
+        android:paddingEnd="@dimen/_10ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/_6sdp"
+            android:fontFamily="@font/roboto_400"
+            android:gravity="center"
+            android:text="Đổi tên"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/vLine1"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_1sdp"
+        app:layout_constraintTop_toBottomOf="@id/lnName"
+        app:layout_constraintStart_toStartOf="@id/lnNickName"
+        app:layout_constraintEnd_toEndOf="@id/lnNickName"
+        android:background="@color/black"/>
+
+    <LinearLayout
+        android:id="@+id/lnNickName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/_6ssp"
+        android:paddingEnd="@dimen/_10ssp"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:paddingVertical="@dimen/_4sdp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/vLine1"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/_6sdp"
+            android:text="Đổi biệt danh"
+            android:gravity="center"
+            android:textSize="@dimen/_14ssp"
+            android:fontFamily="@font/roboto_400"
+            android:textColor="@color/black"
+            />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/vLine2"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_1sdp"
+        app:layout_constraintTop_toBottomOf="@id/lnNickName"
+        app:layout_constraintStart_toStartOf="@id/lnNickName"
+        app:layout_constraintEnd_toEndOf="@id/lnNickName"
+        android:background="@color/black"/>
+
+    <LinearLayout
+        android:id="@+id/lnPhone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/_4sdp"
+        android:paddingStart="@dimen/_6ssp"
+        android:paddingEnd="@dimen/_10ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vLine2">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/_6sdp"
+            android:fontFamily="@font/roboto_400"
+            android:gravity="center"
+            android:text="Đổi số"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

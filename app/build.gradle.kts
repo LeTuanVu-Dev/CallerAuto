@@ -27,8 +27,37 @@ android {
             "CallerAuto-v${versionName}(${versionCode})_${formattedDate}"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file("key_store/qtstudio.jks")
+            storePassword = "qtstudio"
+            keyAlias = "flash8"
+            keyPassword = "qtflash"
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
+    flavorDimensions += listOf("env")
+    productFlavors {
+        create("dev") {
+            applicationId = "com.freelances.callerauto"
+            buildConfigField("Boolean", "build_debug", "true")
+        }
+
+        create("product") {
+            applicationId = "com.freelances.callerauto"
+            buildConfigField("Boolean", "build_debug", "false")
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release") // <-- dòng quan trọng
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

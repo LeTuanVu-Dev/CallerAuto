@@ -94,9 +94,9 @@ class CallPhoneActivity :
     private fun setUpEndWhenLifted() {
         if (sharedPreference.stateEndLifted && !sharedPreference.stateAutoEnd) {
             binding.lnTimeAutoEnd.visible()
-            currentEndLifted = sharedPreference.currentTimerEndLifted
+            currentEndLifted = sharedPreference.currentNumberRepeat
             binding.tvTimeEndAuto.text =
-                formatToHourMinuteSecond(sharedPreference.currentTimerEndLifted)
+                formatToHourMinuteSecond(sharedPreference.currentNumberRepeat)
         }
     }
 
@@ -175,13 +175,13 @@ class CallPhoneActivity :
         }
 
         if (gsmCallModel.status == GsmCallModel.Status.DISCONNECTED) {
-            binding.btnRejectCall.postDelayed({ finish() }, 3000)
+            finish()
         }
 
         when (gsmCallModel.status) {
             GsmCallModel.Status.ACTIVE -> {
-                if (sharedPreference.stateEndLifted && !sharedPreference.stateAutoEnd) {
-                    countTimeEndLifted()
+                if (sharedPreference.stateEndLifted) {
+                    CallPhoneManager.cancelCall()
                 }
 
                 if (!isTimerRunning) {

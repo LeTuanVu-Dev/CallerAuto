@@ -23,9 +23,9 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_500"
             android:gravity="center"
-            android:text="@string/end_timer"
+            android:text="@string/input_phone"
             android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp"
+            android:textSize="@dimen/_16ssp"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputEditText
@@ -48,7 +48,6 @@
             android:textColor="@color/black"
             android:textColorHint="#6A6969"
             android:textSize="@dimen/_11ssp"
-            android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvInputText" />

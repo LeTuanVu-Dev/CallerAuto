@@ -1,25 +1,45 @@
 package com.freelances.callerauto.presentation.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ItemDataBinding
+import com.freelances.callerauto.databinding.LayoutMenuSortBinding
+import com.freelances.callerauto.databinding.LayoutMoreBinding
 import com.freelances.callerauto.di.Carrier
 import com.freelances.callerauto.model.ExcelRow
+import com.freelances.callerauto.presentation.adapters.DataHomeAdapter.Companion.KEY_NAME
+import com.freelances.callerauto.presentation.adapters.DataHomeAdapter.Companion.KEY_NICK_NAME
+import com.freelances.callerauto.presentation.adapters.DataHomeAdapter.Companion.KEY_PHONE_NUMBER
+import com.freelances.callerauto.utils.ext.getApplicationContext
 import com.freelances.callerauto.utils.ext.safeClick
+import com.freelances.callerauto.utils.ext.tap
 
 class DataHomeAdapter(
     private val onClickItem: (Int) -> Unit,
     private val onListChanged: () -> Unit,
+    private val onClickMore: (View,ExcelRow) -> Unit,
 ) : ListAdapter<ExcelRow, DataHomeAdapter.DataViewHolder>(TaskDiffCallbackData) {
 
     companion object {
         const val KEY_SELECTED = "KEY_SELECTED"
+        const val KEY_NAME = "KEY_NAME"
+        const val KEY_NICK_NAME = "KEY_NICK_NAME"
+        const val KEY_PHONE_NUMBER = "KEY_PHONE_NUMBER"
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataViewHolder {
@@ -38,6 +58,15 @@ class DataHomeAdapter(
             val bundle = payloads[0] as Bundle
             if (bundle.containsKey(KEY_SELECTED)) {
                 holder.updateSelected(bundle.getBoolean(KEY_SELECTED))
+            }
+            if (bundle.containsKey(KEY_NAME)) {
+                bundle.getString(KEY_NAME)?.let { holder.updateName(it) }
+            }
+            if (bundle.containsKey(KEY_NICK_NAME)) {
+                bundle.getString(KEY_NICK_NAME)?.let { holder.updateNickName(it) }
+            }
+            if (bundle.containsKey(KEY_PHONE_NUMBER)) {
+                bundle.getString(KEY_PHONE_NUMBER)?.let { holder.updatePhone(it) }
             }
         }
     }
@@ -62,6 +91,35 @@ class DataHomeAdapter(
         onListChanged.invoke()
     }
 
+    fun rename(item: ExcelRow, newName: String) {
+        val updatedList = currentList.map {
+            if (it == item) {
+                it.copy(name = newName)
+            } else it
+        }
+        submitList(updatedList)
+    }
+
+    fun reNickname(item: ExcelRow, newNickname: String) {
+        val updatedList = currentList.map {
+            if (it == item) {
+                Log.d("VuLT", "reNickname: $newNickname")
+                it.copy(nickName = newNickname)
+            } else it
+        }
+        submitList(updatedList)
+    }
+
+    fun rePhoneNumber(item: ExcelRow, newPhoneNumber: String) {
+        val updatedList = currentList.map {
+            if (it == item) {
+                it.copy(phoneNumber = newPhoneNumber)
+            } else it
+        }
+        submitList(updatedList)
+    }
+
+
 
     fun hasSelectedItem(): Boolean {
         return currentList.any { it.selected }
@@ -70,7 +128,6 @@ class DataHomeAdapter(
     fun getListSelected(): List<ExcelRow> {
         return currentList.filter { it.selected }
     }
-
 
     fun toggleSelectedItem(position: Int) {
         if (position < 0 || position >= currentList.size) return
@@ -96,14 +153,28 @@ class DataHomeAdapter(
                     onClickItem(position)
                 }
             }
+            binding.ivMore.setOnClickListener { view->
+                onClickMore(view,getItem(adapterPosition))
+            }
         }
 
         @SuppressLint("SetTextI18n")
         fun bind(item: ExcelRow) {
-            val nameNick = if (item.nickName?.isNotEmpty() == true) "(${item.nickName})" else ""
-            binding.tvName.text = item.name+"\n" + nameNick
-            binding.tvPhoneNumber.text = item.phoneNumber
+            val nameNick = if (item.nickName?.isNotEmpty() == true) {item.nickName} else ""
             updateSelected(item.selected)
+            updateName(item.name?:"")
+            updateNickName(nameNick)
+            updatePhone(item.phoneNumber?:"")
+        }
+
+        fun updateName(newName: String) {
+            binding.tvName.text = newName
+        }
+        fun updateNickName(newName: String) {
+            binding.tvNickName.text = newName
+        }
+        fun updatePhone(newName: String) {
+            binding.tvPhoneNumber.text = newName
         }
 
         fun updateSelected(isSelected: Boolean) {
@@ -114,9 +185,11 @@ class DataHomeAdapter(
     }
 }
 
+
+
 object TaskDiffCallbackData : DiffUtil.ItemCallback<ExcelRow>() {
     override fun areItemsTheSame(oldItem: ExcelRow, newItem: ExcelRow): Boolean {
-        return oldItem.phoneNumber == newItem.phoneNumber
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: ExcelRow, newItem: ExcelRow): Boolean {
@@ -127,6 +200,15 @@ object TaskDiffCallbackData : DiffUtil.ItemCallback<ExcelRow>() {
         val diffBundle = Bundle()
         if (oldItem.selected != newItem.selected) {
             diffBundle.putBoolean(DataHomeAdapter.KEY_SELECTED, newItem.selected)
+        }
+        if (oldItem.name != newItem.name) {
+            diffBundle.putString(KEY_NAME, newItem.name)
+        }
+        if (oldItem.nickName != newItem.nickName) {
+            diffBundle.putString(KEY_NICK_NAME, newItem.nickName)
+        }
+        if (oldItem.phoneNumber != newItem.phoneNumber) {
+            diffBundle.putString(KEY_PHONE_NUMBER, newItem.phoneNumber)
         }
         return if (diffBundle.isEmpty) null else diffBundle
     }
