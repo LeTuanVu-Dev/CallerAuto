@@ -7,10 +7,12 @@ import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Binder
 import android.os.Build
 import android.provider.Settings
 import android.telecom.TelecomManager
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -69,19 +71,25 @@ open class PermissionActivity :
         }
 
         binding.ivToggleCallDefault.safeClick {
-            if (ContextCompat.checkSelfPermission(
-                    this,
+            if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.CALL_PHONE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                launchSetDefaultDialerIntent(this)
-            } else {
-                if (!BackgroundStartPermission.isBackgroundStartAllowed(this)) {
+                ) == PackageManager.PERMISSION_GRANTED && BackgroundStartPermission.isBackgroundStartAllowed(this)
+            ){
+                checkToggle()
+            }
+            else{
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.CALL_PHONE
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    launchSetDefaultDialerIntent(this)
+                }
+                else if (!BackgroundStartPermission.isBackgroundStartAllowed(this)) {
                     grandPopUpPermissionLauncher.launchAppPermissionsSettings(packageName)
-                } else {
-                    checkToggle()
                 }
             }
+
         }
     }
 
@@ -97,7 +105,6 @@ open class PermissionActivity :
             binding.tvContinue.visible()
         }
     }
-
 
     private fun openAppSettings() {
         startActivity(getIntentSettingsPermission())
@@ -120,9 +127,12 @@ open class PermissionActivity :
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     val rm: RoleManager? = activity.getSystemService(RoleManager::class.java)
                     if (rm?.isRoleAvailable(RoleManager.ROLE_DIALER) == true) {
+                        Log.d("VuLT", "launchSetDefaultDialerIntent:1 ")
                         setDefaultDialerLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER))
                     }
                 } else {
+                    Log.d("VuLT", "launchSetDefaultDialerIntent:2 ")
+
                     setDefaultDialerLauncher.launch(this)
                 }
             } else {
@@ -174,18 +184,21 @@ open class PermissionActivity :
         }
     }
 
-
     private fun permissionCallDefault() {
         setDefaultDialerLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
-                if (!canDrawOverlayViews() && DeviceUtil.isXiaomi()) {
+                if (!canDrawOverlayViews() && DeviceUtil.isXiaomiOrMiui()) {
+                    Log.d("VuLT", "permissionCallDefault: 1")
                     grandPopUpPermissionLauncher.launchAppPermissionsSettings(packageName)
                 } else {
+                    Log.d("VuLT", "permissionCallDefault:2 ")
                     checkToggle()
                 }
             } else {
+                Log.d("VuLT", "permissionCallDefault:3")
+
                 Toast.makeText(
                     this,
                     getString(R.string.permissions_denied), Toast.LENGTH_LONG
