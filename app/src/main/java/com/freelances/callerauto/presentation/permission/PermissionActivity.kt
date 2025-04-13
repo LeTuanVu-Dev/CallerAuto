@@ -24,6 +24,7 @@ import com.freelances.callerauto.presentation.bases.BaseActivity
 import com.freelances.callerauto.presentation.login.LoginActivity
 import com.freelances.callerauto.utils.device.BackgroundStartPermission
 import com.freelances.callerauto.utils.device.DeviceUtil
+import com.freelances.callerauto.utils.device.FloatUtil
 import com.freelances.callerauto.utils.device.PermissionsSettingsUtil.launchAppPermissionsSettings
 import com.freelances.callerauto.utils.ext.getIntentSettingsPermission
 import com.freelances.callerauto.utils.ext.isGrantStoragePermission
@@ -189,16 +190,12 @@ open class PermissionActivity :
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
-                if (!canDrawOverlayViews() && DeviceUtil.isXiaomiOrMiui()) {
-                    Log.d("VuLT", "permissionCallDefault: 1")
+                if (!FloatUtil.checkPermission(this)) {
                     grandPopUpPermissionLauncher.launchAppPermissionsSettings(packageName)
                 } else {
-                    Log.d("VuLT", "permissionCallDefault:2 ")
                     checkToggle()
                 }
             } else {
-                Log.d("VuLT", "permissionCallDefault:3")
-
                 Toast.makeText(
                     this,
                     getString(R.string.permissions_denied), Toast.LENGTH_LONG
