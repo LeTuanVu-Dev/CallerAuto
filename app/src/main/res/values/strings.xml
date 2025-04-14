@@ -44,4 +44,5 @@
     <string name="input_name_new">Nhập tên mới của bạn</string>
     <string name="input_nick_name">Nhập biệt danh mới của bạn</string>
     <string name="input_phone">Nhập số mới</string>
+    <string name="overlay">Overlay</string>
 </resources>

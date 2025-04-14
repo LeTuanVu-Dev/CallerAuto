@@ -144,6 +144,37 @@
 
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/lnPermissionOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_13sdp"
+        android:background="@drawable/bg_item_language"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/_13sdp"
+        app:layout_constraintTop_toBottomOf="@id/lnPermissionNoty">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_400"
+            android:text="@string/overlay"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_11ssp" />
+
+        <ImageView
+            android:id="@+id/ivToggleOverlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/_11sdp"
+            android:src="@drawable/ic_toggle_off" />
+
+    </LinearLayout>
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvContinue"
         android:layout_width="wrap_content"
@@ -155,7 +186,7 @@
         android:text="@string/_continue"
         android:textColor="@color/color_63E6E2"
         android:textSize="@dimen/_11ssp"
-        app:layout_constraintTop_toBottomOf="@id/lnPermissionNoty"
+        app:layout_constraintTop_toBottomOf="@id/lnPermissionOverlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

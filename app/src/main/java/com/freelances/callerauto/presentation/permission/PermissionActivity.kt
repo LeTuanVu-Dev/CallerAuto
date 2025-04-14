@@ -2,17 +2,13 @@ package com.freelances.callerauto.presentation.permission
 
 import android.Manifest
 import android.app.Activity
-import android.app.AppOpsManager
 import android.app.role.RoleManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Binder
 import android.os.Build
 import android.provider.Settings
 import android.telecom.TelecomManager
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,13 +20,13 @@ import com.freelances.callerauto.presentation.bases.BaseActivity
 import com.freelances.callerauto.presentation.login.LoginActivity
 import com.freelances.callerauto.utils.device.BackgroundStartPermission
 import com.freelances.callerauto.utils.device.DeviceUtil
-import com.freelances.callerauto.utils.device.FloatUtil
 import com.freelances.callerauto.utils.device.PermissionsSettingsUtil.launchAppPermissionsSettings
 import com.freelances.callerauto.utils.ext.getIntentSettingsPermission
 import com.freelances.callerauto.utils.ext.isGrantStoragePermission
 import com.freelances.callerauto.utils.ext.readPhonePermissionGrant
 import com.freelances.callerauto.utils.ext.safeClick
 import com.freelances.callerauto.utils.ext.visible
+import com.freelances.callerauto.utils.helper.OverlayPermissionHelper
 
 
 open class PermissionActivity :
@@ -51,7 +47,6 @@ open class PermissionActivity :
         updateButtonDoneState()
         checkToggle()
         permissionCallDefault()
-
         binding.ivToggleStorage.safeClick {
             val showRationale =
                 shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) ||
@@ -72,37 +67,55 @@ open class PermissionActivity :
         }
 
         binding.ivToggleCallDefault.safeClick {
-            if (ContextCompat.checkSelfPermission(this,
+            if (ContextCompat.checkSelfPermission(
+                    this,
                     Manifest.permission.CALL_PHONE
-                ) == PackageManager.PERMISSION_GRANTED && BackgroundStartPermission.isBackgroundStartAllowed(this)
-            ){
+                ) == PackageManager.PERMISSION_GRANTED && BackgroundStartPermission.isBackgroundStartAllowed(
+                    this
+                )
+            ) {
                 checkToggle()
-            }
-            else{
+            } else {
                 if (ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.CALL_PHONE
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
                     launchSetDefaultDialerIntent(this)
-                }
-                else if (!BackgroundStartPermission.isBackgroundStartAllowed(this)) {
+                } else if (!BackgroundStartPermission.isBackgroundStartAllowed(this)) {
                     grandPopUpPermissionLauncher.launchAppPermissionsSettings(packageName)
                 }
             }
+        }
 
+        binding.ivToggleOverlay.safeClick {
+            if (!OverlayPermissionHelper.hasOverlayPermission(this)) {
+                OverlayPermissionHelper.requestOverlayPermission(this)
+            } else {
+                checkToggle()
+            }
         }
     }
 
     open fun checkToggle() {
         binding.ivToggleCallDefault.isEnabled = !readPhonePermissionGrant(this)
+        binding.ivToggleOverlay.isEnabled =
+            !OverlayPermissionHelper.hasOverlayPermission(this)
         binding.ivToggleStorage.isEnabled =
             !(!isGrantStoragePermission() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
 
         binding.ivToggleCallDefault.setImageResource(if (readPhonePermissionGrant(this)) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
         binding.ivToggleStorage.setImageResource(if (isGrantStoragePermission() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
+        binding.ivToggleOverlay.setImageResource(
+            if (!OverlayPermissionHelper.hasOverlayPermission(
+                    this
+                )
+            ) R.drawable.ic_toggle_off else R.drawable.ic_toggle_on
+        )
 
-        if (readPhonePermissionGrant(this) && (isGrantStoragePermission() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU))) {
+        val showContinue =
+            OverlayPermissionHelper.hasOverlayPermission(this) && readPhonePermissionGrant(this) && (isGrantStoragePermission() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU))
+        if (showContinue) {
             binding.tvContinue.visible()
         }
     }
@@ -128,12 +141,9 @@ open class PermissionActivity :
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     val rm: RoleManager? = activity.getSystemService(RoleManager::class.java)
                     if (rm?.isRoleAvailable(RoleManager.ROLE_DIALER) == true) {
-                        Log.d("VuLT", "launchSetDefaultDialerIntent:1 ")
                         setDefaultDialerLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER))
                     }
                 } else {
-                    Log.d("VuLT", "launchSetDefaultDialerIntent:2 ")
-
                     setDefaultDialerLauncher.launch(this)
                 }
             } else {
@@ -156,45 +166,13 @@ open class PermissionActivity :
             }
         }
 
-    private fun canDrawOverlayViews(): Boolean {
-        val con: Context = this
-        return try {
-            Settings.canDrawOverlays(con)
-        } catch (e: NoSuchMethodError) {
-            canDrawOverlaysUsingReflection(con)
-        }
-    }
-
-    private fun canDrawOverlaysUsingReflection(context: Context): Boolean {
-        try {
-            val manager = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-            val clazz: Class<*> = AppOpsManager::class.java
-            val dispatchMethod =
-                clazz.getMethod("checkOp", Int::class.java, Int::class.java, String::class.java)
-            // AppOpsManager.OP_SYSTEM_ALERT_WINDOW = 24
-            val mode = dispatchMethod.invoke(
-                manager,
-                24,
-                Binder.getCallingUid(),
-                context.applicationContext.packageName
-            ) as Int
-
-            return AppOpsManager.MODE_ALLOWED == mode
-        } catch (e: Exception) {
-            return false
-        }
-    }
 
     private fun permissionCallDefault() {
         setDefaultDialerLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
-                if (!FloatUtil.checkPermission(this)) {
-                    grandPopUpPermissionLauncher.launchAppPermissionsSettings(packageName)
-                } else {
-                    checkToggle()
-                }
+                checkToggle()
             } else {
                 Toast.makeText(
                     this,

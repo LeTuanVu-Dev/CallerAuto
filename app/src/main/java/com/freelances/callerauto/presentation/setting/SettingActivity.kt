@@ -2,11 +2,14 @@ package com.freelances.callerauto.presentation.setting
 
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ActivitySettingBinding
 import com.freelances.callerauto.presentation.bases.BaseActivity
 import com.freelances.callerauto.presentation.dialog.EndTimerInputDialog
+import com.freelances.callerauto.utils.ext.isDualSimActive
 import com.freelances.callerauto.utils.ext.safeClick
 import com.freelances.callerauto.utils.ext.tap
 
@@ -22,6 +25,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
     }
 
     private fun initData() {
+        checkShow2Sim()
         updateNumberRepeat(sharedPreference.currentNumberRepeat.toString())
         updateTimerAuto(sharedPreference.currentTimerEndAuto.toString())
         updateTimerWait(sharedPreference.currentTimerEndWaiting.toString())
@@ -48,12 +52,32 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
                 setEnableSubView(sharedPreference.stateAutoEnd)
             )
         )
+    }
 
+    private fun checkShow2Sim() {
+        binding.lnTypeSms.isVisible = isDualSimActive(this)
+        sharedPreference.currentSimType =
+            if (isDualSimActive(this)) sharedPreference.currentSimType else -1
+    }
+
+    private fun setSimSelection(tvSelected: TextView, tvUnselected: TextView, simType: Int) {
+        sharedPreference.currentSimType = simType
+        tvSelected.setBackgroundResource(R.drawable.bg_dialog_negative_button)
+        tvSelected.setTextColor(resources.getColor(R.color.black))
+        tvUnselected.setBackgroundResource(R.drawable.bg_dialog_outline_button)
+        tvUnselected.setTextColor(resources.getColor(R.color.white))
     }
 
     private fun initAction() {
         binding.apply {
             ivBack.safeClick { finish() }
+            tvSim1.tap {
+                setSimSelection(tvSim1, tvSim2, 1)
+            }
+
+            tvSim2.tap {
+                setSimSelection(tvSim2, tvSim1, 2)
+            }
 
             ivToggleEndLifted.tap {
                 toggleState(

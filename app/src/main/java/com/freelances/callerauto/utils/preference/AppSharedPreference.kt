@@ -42,6 +42,8 @@ class AppSharedPreference(val sharedPreference: SharedPreferences) {
     var currentNumberRepeat: Int by intPref("currentNumberRepeat", 1)
     var currentTimerEndAuto: Int by intPref("currentTimerEndAuto", 30)
     var currentTimerEndWaiting: Int by intPref("currentTimerEndWaiting", 4)
+    var currentSimType: Int by intPref("currentSimType", 1)
+    var currentAutoCallPosition: Int by intPref("currentAutoCallPosition", 0)
     var valueLogin: String by stringPref("valueLogin", "")
 
     fun sync() {

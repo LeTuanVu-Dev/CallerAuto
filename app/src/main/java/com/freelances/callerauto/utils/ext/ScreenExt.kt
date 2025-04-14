@@ -1,8 +1,11 @@
 package com.freelances.callerauto.utils.ext
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.os.PowerManager
+import android.telephony.SubscriptionManager
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
@@ -28,6 +31,19 @@ fun formatToHourMinuteSecond(totalSeconds: Int): String {
     } else {
         String.format("%02d:%02d", minutes, seconds)
     }
+}
+
+@SuppressLint("MissingPermission")
+fun isDualSimActive(context: Context): Boolean {
+    val subscriptionManager = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+
+    // Chỉ hoạt động từ API 22 trở lên
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+        val activeSubscriptionInfoList = subscriptionManager.activeSubscriptionInfoList
+        return activeSubscriptionInfoList?.size ?: 0 >= 2
+    }
+
+    return false
 }
 
 

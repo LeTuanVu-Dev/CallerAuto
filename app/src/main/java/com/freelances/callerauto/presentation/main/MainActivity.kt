@@ -122,6 +122,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 isCalling = true
                 if (isActive) {
                     currentIndex++
+                    sharedPreference.currentAutoCallPosition = currentIndex
                     callNextNumber(this@MainActivity) // Gọi số tiếp theo trong danh sách
                 }
             }
@@ -177,7 +178,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     return@safeClick
                 }
                 currentRepeat = sharedPreference.currentNumberRepeat
-                currentIndex = 0
                 startAutoCall(this@MainActivity)
             }
 
@@ -327,7 +327,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
 
     private fun startAutoCall(context: Context) {
-        currentIndex = 0
+        if (dataHomeAdapter.getListSelected().size == dataHomeAdapter.currentList.size) {
+            currentIndex = sharedPreference.currentAutoCallPosition
+        } else {
+            currentIndex = 0
+        }
         isCalling = false
         isStopped = false // Bắt đầu lại thì không dừng nữa
         lifecycleScope.launch {
@@ -348,6 +352,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         if (isStopped) return // Nếu đã dừng thì không gọi nữa
         if (currentIndex >= dataHomeAdapter.getListSelected().size) {
             Toast.makeText(context, "Đã gọi hết danh sách", Toast.LENGTH_SHORT).show()
+            sharedPreference.currentAutoCallPosition = 0
             if (sharedPreference.stateRepeatList && currentRepeat > 0) {
                 currentIndex = 0
                 currentRepeat--
@@ -358,13 +363,32 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
         phoneNumber = dataHomeAdapter.getListSelected()[currentIndex].phoneNumber.toString()
         displayName = dataHomeAdapter.getListSelected()[currentIndex].name.toString()
-        callPhoneNumber(context, phoneNumber)
+        callPhoneNumber(context, phoneNumber, sharedPreference.currentSimType)
+
     }
 
     private fun stopAutoCall() {
         isStopped = true
         isCalling = false
         currentRepeat = 0
+    }
+
+    private fun callPhoneNumber(context: Context, phoneNumber: String, simSlot: Int) {
+        val intent = Intent(Intent.ACTION_CALL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+            if (simSlot != -1) {
+                putExtra("simSlot", simSlot)  // Chỉ định SIM để gọi
+            }
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            isCalling = true
+            context.startActivity(intent)
+        } else {
+            Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
+        }
     }
 
 
