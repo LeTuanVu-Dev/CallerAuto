@@ -325,7 +325,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
-
     private fun startAutoCall(context: Context) {
         if (dataHomeAdapter.getListSelected().size == dataHomeAdapter.currentList.size) {
             currentIndex = sharedPreference.currentAutoCallPosition
