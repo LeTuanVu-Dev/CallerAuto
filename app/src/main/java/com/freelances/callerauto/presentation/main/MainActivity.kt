@@ -330,7 +330,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private fun startAutoCall(context: Context) {
         if (dataHomeAdapter.getListSelected().size == dataHomeAdapter.currentList.size) {
-            Log.d("VuLT", "startAutoCall: ")
             currentIndex = sharedPreference.currentAutoCallPosition
         } else {
             currentIndex = 0
@@ -343,7 +342,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     if (currentIndex < dataHomeAdapter.getListSelected().size || (sharedPreference.stateRepeatList && currentRepeat > 0)) {
                         showDialogCountTime()
                     }
-
                 }
             }
         }
@@ -366,7 +364,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
         phoneNumber = dataHomeAdapter.getListSelected()[currentIndex].phoneNumber.toString()
         displayName = dataHomeAdapter.getListSelected()[currentIndex].name.toString()
-        callPhoneNumber(context, phoneNumber, sharedPreference.currentSimType)
+//        callPhoneNumber(context, phoneNumber)
+        placeCall(context, phoneNumber)
 //        callWithSimSlot(context, phoneNumber, sharedPreference.currentSimType)
 //        callPhoneWithSIM(context, phoneNumber, sharedPreference.currentSimType)
     }
@@ -450,6 +449,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun placeCall(context: Context, phoneNumber: String) {
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
+            == PackageManager.PERMISSION_GRANTED) {
+
+            val uri = Uri.fromParts("tel", phoneNumber, null)
+            val extras = Bundle()
+
+            telecomManager.placeCall(uri, extras)
+
+        } else {
+            Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
 
     private fun callPhoneNumber(context: Context, phoneNumber: String) {
