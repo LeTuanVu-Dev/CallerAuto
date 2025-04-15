@@ -26,6 +26,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
 
     private fun initData() {
         checkShow2Sim()
+        updateNumberStartCall(sharedPreference.currentAutoCallPosition.toString())
         updateNumberRepeat(sharedPreference.currentNumberRepeat.toString())
         updateTimerAuto(sharedPreference.currentTimerEndAuto.toString())
         updateTimerWait(sharedPreference.currentTimerEndWaiting.toString())
@@ -72,11 +73,11 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
         binding.apply {
             ivBack.safeClick { finish() }
             tvSim1.tap {
-                setSimSelection(tvSim1, tvSim2, 1)
+                setSimSelection(tvSim1, tvSim2, 0)
             }
 
             tvSim2.tap {
-                setSimSelection(tvSim2, tvSim1, 2)
+                setSimSelection(tvSim2, tvSim1, 1)
             }
 
             ivToggleEndLifted.tap {
@@ -177,6 +178,16 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
                 showInputTimerAutoDialog(sharedPreference.currentTimerEndAuto.toString())
             }
 
+            lnStartCallFromPosition.safeClick {
+                showInputPositionStartDialog(sharedPreference.currentAutoCallPosition.toString())
+            }
+
+        }
+    }
+
+    private val dialogInputStartCallPositionListener by lazy {
+        EndTimerInputDialog.newInstance { timer ->
+            updateNumberStartCall(timer)
         }
     }
 
@@ -198,6 +209,11 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
         }
     }
 
+    private fun updateNumberStartCall(timer: String) {
+        sharedPreference.currentAutoCallPosition = timer.toInt()
+        binding.tvCurrentPosition.text = timer
+    }
+
     private fun updateNumberRepeat(timer: String) {
         sharedPreference.currentNumberRepeat = timer.toInt()
         binding.tvNumberRepeat.text = timer
@@ -213,6 +229,16 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
         binding.tvTimerWait.text = timer + " ${getString(R.string.seconds)}"
     }
 
+
+    private fun showInputPositionStartDialog(timerCurrent: String) {
+        if (!dialogInputStartCallPositionListener.isAdded) {
+            dialogInputStartCallPositionListener.setTimeCurrent(timerCurrent)
+            dialogInputStartCallPositionListener.show(
+                supportFragmentManager,
+                "show_gotoSetting_listener"
+            )
+        }
+    }
 
     private fun showInputTimerDialog(timerCurrent: String) {
         if (!dialogInputTimerLiftedListener.isAdded) {

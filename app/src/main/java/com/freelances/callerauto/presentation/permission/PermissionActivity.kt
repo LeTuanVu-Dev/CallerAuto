@@ -22,6 +22,7 @@ import com.freelances.callerauto.utils.device.BackgroundStartPermission
 import com.freelances.callerauto.utils.device.DeviceUtil
 import com.freelances.callerauto.utils.device.PermissionsSettingsUtil.launchAppPermissionsSettings
 import com.freelances.callerauto.utils.ext.getIntentSettingsPermission
+import com.freelances.callerauto.utils.ext.isDefaultDialer
 import com.freelances.callerauto.utils.ext.isGrantStoragePermission
 import com.freelances.callerauto.utils.ext.readPhonePermissionGrant
 import com.freelances.callerauto.utils.ext.safeClick
@@ -98,13 +99,13 @@ open class PermissionActivity :
     }
 
     open fun checkToggle() {
-        binding.ivToggleCallDefault.isEnabled = !readPhonePermissionGrant(this)
+        binding.ivToggleCallDefault.isEnabled = !isDefaultDialer(this)
         binding.ivToggleOverlay.isEnabled =
             !OverlayPermissionHelper.hasOverlayPermission(this)
         binding.ivToggleStorage.isEnabled =
             !(!isGrantStoragePermission() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
 
-        binding.ivToggleCallDefault.setImageResource(if (readPhonePermissionGrant(this)) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
+        binding.ivToggleCallDefault.setImageResource(if (isDefaultDialer(this)) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
         binding.ivToggleStorage.setImageResource(if (isGrantStoragePermission() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)) R.drawable.ic_toggle_on else R.drawable.ic_toggle_off)
         binding.ivToggleOverlay.setImageResource(
             if (!OverlayPermissionHelper.hasOverlayPermission(
@@ -114,7 +115,7 @@ open class PermissionActivity :
         )
 
         val showContinue =
-            OverlayPermissionHelper.hasOverlayPermission(this) && readPhonePermissionGrant(this) && (isGrantStoragePermission() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU))
+            OverlayPermissionHelper.hasOverlayPermission(this) && isDefaultDialer(this) && (isGrantStoragePermission() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU))
         if (showContinue) {
             binding.tvContinue.visible()
         }

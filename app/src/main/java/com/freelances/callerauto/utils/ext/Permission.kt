@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.telecom.TelecomManager
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -127,6 +128,11 @@ fun Context.isGrantStoragePermission(): Boolean {
     return arePermissionsGranted(storagePermission)
 }
 
+fun isDefaultDialer(context: Context): Boolean {
+    val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+    val defaultDialer = telecomManager.defaultDialerPackage
+    return context.packageName == defaultDialer
+}
 fun Context.isGrantedCamera(): Boolean {
     return checkPermissionGranted(cameraPermission)
 }

@@ -282,7 +282,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:orientation="horizontal"
-
+                    android:id="@+id/lnStartCallFromPosition"
                     android:paddingVertical="@dimen/_10sdp">
 
                     <LinearLayout
@@ -304,6 +304,7 @@
 
 
                         <TextView
+                            android:id="@+id/tvCurrentPosition"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"

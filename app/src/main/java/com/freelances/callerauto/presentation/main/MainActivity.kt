@@ -1,6 +1,7 @@
 package com.freelances.callerauto.presentation.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.telecom.TelecomManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -327,6 +330,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private fun startAutoCall(context: Context) {
         if (dataHomeAdapter.getListSelected().size == dataHomeAdapter.currentList.size) {
+            Log.d("VuLT", "startAutoCall: ")
             currentIndex = sharedPreference.currentAutoCallPosition
         } else {
             currentIndex = 0
@@ -363,8 +367,65 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         phoneNumber = dataHomeAdapter.getListSelected()[currentIndex].phoneNumber.toString()
         displayName = dataHomeAdapter.getListSelected()[currentIndex].name.toString()
         callPhoneNumber(context, phoneNumber, sharedPreference.currentSimType)
-
+//        callWithSimSlot(context, phoneNumber, sharedPreference.currentSimType)
+//        callPhoneWithSIM(context, phoneNumber, sharedPreference.currentSimType)
     }
+
+    @SuppressLint("MissingPermission")
+    fun callPhoneWithSIM(context: Context, phoneNumber: String, simSlot: Int) {
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+        val phoneAccountHandles = telecomManager.callCapablePhoneAccounts
+
+        if (simSlot >= phoneAccountHandles.size || simSlot < 0) {
+            callPhoneNumber(context,phoneNumber)
+            //Toast.makeText(context, "Không tìm thấy SIM $simSlot", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val intent = Intent(Intent.ACTION_CALL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+            putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccountHandles[simSlot])
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            context.startActivity(intent)
+        } else {
+            Toast.makeText(context, "Chưa cấp quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    @SuppressLint("MissingPermission", "DiscouragedPrivateApi")
+    fun callWithSimSlot(context: Context, phoneNumber: String, simSlot: Int) {
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+
+        val uri = Uri.fromParts("tel", phoneNumber, null)
+        val extras = Bundle()
+
+        try {
+            val subscriptionManagerClass = Class.forName("android.telephony.SubscriptionManager")
+            val getSubIdMethod = subscriptionManagerClass.getDeclaredMethod("getSubId", Int::class.javaPrimitiveType)
+            getSubIdMethod.isAccessible = true
+            val subIdArray = getSubIdMethod.invoke(null, simSlot) as IntArray
+
+            extras.putInt("android.telecom.extra.PHONE_ACCOUNT_HANDLE_SUBSCRIPTION_ID", subIdArray[0])
+
+            val intent = Intent(Intent.ACTION_CALL, uri)
+            intent.putExtras(extras)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                context.startActivity(intent)
+            } else {
+                Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(context, "Không thể gọi theo SIM $simSlot", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     private fun stopAutoCall() {
         isStopped = true
