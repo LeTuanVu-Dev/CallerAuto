@@ -242,6 +242,47 @@
             android:src="@drawable/it_action_accept_6" />
     </FrameLayout>
 
+    <LinearLayout
+        android:id="@+id/lnTimeOut"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="#000">
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_400"
+            android:gravity="center"
+            android:text="5"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_30ssp"
+            android:layout_marginTop="@dimen/_10sdp"
+            />
+
+        <TextView
+            android:id="@+id/buttonNo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:background="@drawable/bg_dialog_outline_button"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:paddingHorizontal="@dimen/_5sdp"
+            android:paddingVertical="@dimen/_11sdp"
+            android:text="Dừng Cuộc Gọi"
+            android:textAllCaps="false"
+            android:textSize="@dimen/_15ssp"
+            android:textColor="@color/white"
+            app:cornerRadius="@dimen/_4sdp"
+
+            />
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/frLoading"
         android:layout_width="match_parent"

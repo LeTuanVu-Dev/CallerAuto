@@ -44,7 +44,10 @@ import com.freelances.callerauto.utils.ext.safeClick
 import com.freelances.callerauto.utils.ext.tap
 import com.freelances.callerauto.utils.ext.visible
 import com.freelances.callerauto.utils.helper.CallCoordinator
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -119,8 +122,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
+
     private fun showDialogCountTime() {
-        val countTimeReCallDialog = CountTimeReCallDialog(this, actionTimeDone = {
+        countTimeEndLifted{
             lifecycleScope.launch {
                 isCalling = true
                 if (isActive) {
@@ -129,13 +133,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     callNextNumber(this@MainActivity) // Gọi số tiếp theo trong danh sách
                 }
             }
-
-        }, onCancelClick = {
-            stopAutoCall()
-        })
-        if (!countTimeReCallDialog.isShowing) {
-            countTimeReCallDialog.setTimeCount(sharedPreference.currentTimerEndWaiting)
-            countTimeReCallDialog.show()
         }
 
     }
@@ -163,6 +160,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             }
             frAdd.safeClick {
                 pickExcelFile()
+            }
+
+            buttonNo.tap {
+                stopAutoCall()
             }
 
             lnSelectAll.safeClick {
@@ -211,7 +212,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    Log.d("VuLT", "onTextChanged: s = $s")
                     filterWithSearch(s.toString().trim())
                 }
 
@@ -297,7 +297,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                         dataHomeAdapter.submitList(dataList)
                         checkShowSelectAll()
                     }
-                    Log.d("VuLT", "dataList = ${dataHomeAdapter.currentList}")
                     workbook.close()
                     inputStream?.close()
                 }
@@ -315,16 +314,35 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun getCarrierFromPhoneNumber(phone: String): Carrier {
-        val normalizedPhone = phone.replace("+84", "0")
+        val normalizedPhone = phone
+            .replace("[^\\d]".toRegex(), "") // Bỏ ký tự không phải số
+            .let {
+                when {
+                    it.startsWith("84") -> it.replaceFirst("84", "0")
+                    it.startsWith("0") -> it
+                    else -> "0$it"
+                }
+            }
+
         val prefix = normalizedPhone.take(3)
 
         return when (prefix) {
-            in listOf("032", "033", "034", "035", "036", "037", "038", "039") -> Carrier.VIETTEL
-            in listOf("070", "076", "077", "078", "079") -> Carrier.MOBIFONE
-            in listOf("081", "082", "083", "084", "085", "088", "089") -> Carrier.VINAPHONE
-            in listOf("056", "058") -> Carrier.VIETNAMOBILE
-            in listOf("059") -> Carrier.GMOBILE
-            else -> Carrier.UNKNOWN
+            // Viettel
+            "086", "096", "097", "098", "032", "033", "034", "035", "036", "037", "038", "039" -> Carrier.VIETTEL
+
+            // Mobifone
+            "089", "090", "093", "070", "076", "077", "078", "079" -> Carrier.MOBIFONE
+
+            // Vinaphone
+            "088", "091", "094", "081", "082", "083", "084", "085" -> Carrier.VINAPHONE
+
+            // Vietnamobile
+            "092", "056", "058" -> Carrier.VIETNAMOBILE
+
+            // Gmobile
+            "099", "059" -> Carrier.GMOBILE
+
+            else -> Carrier.VIETTEL
         }
     }
 
@@ -338,8 +356,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         isStopped = false // Bắt đầu lại thì không dừng nữa
         lifecycleScope.launch {
             CallCoordinator.onCallFinished.collect { callOff ->
-                if (callOff) {
+                if (callOff && !isStopped) {
+                    currentEndLifted = sharedPreference.currentTimerEndWaiting
                     if (currentIndex < dataHomeAdapter.getListSelected().size || (sharedPreference.stateRepeatList && currentRepeat > 0)) {
+                        binding.lnTimeOut.visible()
                         showDialogCountTime()
                     }
                 }
@@ -364,92 +384,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
         phoneNumber = dataHomeAdapter.getListSelected()[currentIndex].phoneNumber.toString()
         displayName = dataHomeAdapter.getListSelected()[currentIndex].name.toString()
-//        callPhoneNumber(context, phoneNumber)
         placeCall(context, phoneNumber)
-//        callWithSimSlot(context, phoneNumber, sharedPreference.currentSimType)
-//        callPhoneWithSIM(context, phoneNumber, sharedPreference.currentSimType)
     }
-
-    @SuppressLint("MissingPermission")
-    fun callPhoneWithSIM(context: Context, phoneNumber: String, simSlot: Int) {
-        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-        val phoneAccountHandles = telecomManager.callCapablePhoneAccounts
-
-        if (simSlot >= phoneAccountHandles.size || simSlot < 0) {
-            callPhoneNumber(context,phoneNumber)
-            //Toast.makeText(context, "Không tìm thấy SIM $simSlot", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val intent = Intent(Intent.ACTION_CALL).apply {
-            data = Uri.parse("tel:$phoneNumber")
-            putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccountHandles[simSlot])
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-            context.startActivity(intent)
-        } else {
-            Toast.makeText(context, "Chưa cấp quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-    @SuppressLint("MissingPermission", "DiscouragedPrivateApi")
-    fun callWithSimSlot(context: Context, phoneNumber: String, simSlot: Int) {
-        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-
-        val uri = Uri.fromParts("tel", phoneNumber, null)
-        val extras = Bundle()
-
-        try {
-            val subscriptionManagerClass = Class.forName("android.telephony.SubscriptionManager")
-            val getSubIdMethod = subscriptionManagerClass.getDeclaredMethod("getSubId", Int::class.javaPrimitiveType)
-            getSubIdMethod.isAccessible = true
-            val subIdArray = getSubIdMethod.invoke(null, simSlot) as IntArray
-
-            extras.putInt("android.telecom.extra.PHONE_ACCOUNT_HANDLE_SUBSCRIPTION_ID", subIdArray[0])
-
-            val intent = Intent(Intent.ACTION_CALL, uri)
-            intent.putExtras(extras)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                context.startActivity(intent)
-            } else {
-                Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "Không thể gọi theo SIM $simSlot", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-    private fun stopAutoCall() {
-        isStopped = true
-        isCalling = false
-        currentRepeat = 0
-    }
-
-    private fun callPhoneNumber(context: Context, phoneNumber: String, simSlot: Int) {
-        val intent = Intent(Intent.ACTION_CALL).apply {
-            data = Uri.parse("tel:$phoneNumber")
-            if (simSlot != -1) {
-                putExtra("simSlot", simSlot)  // Chỉ định SIM để gọi
-            }
-        }
-
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            isCalling = true
-            context.startActivity(intent)
-        } else {
-            Toast.makeText(context, "Chưa có quyền gọi điện thoại", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private fun placeCall(context: Context, phoneNumber: String) {
         val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
 
@@ -466,7 +402,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
-
+    private fun stopAutoCall() {
+        isStopped = true
+        isCalling = false
+        currentRepeat = 0
+        binding.lnTimeOut.gone()
+    }
 
     private fun callPhoneNumber(context: Context, phoneNumber: String) {
         val intent = Intent(Intent.ACTION_CALL).apply {
@@ -485,7 +426,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private fun showRenameDialog(textCurrent: String, item: ExcelRow, type: String) {
         val dialogInputNewDataListener = RenameDialog.newInstance { newName ->
-            Log.d("VuLT", "showRenameDialog: type = $type")
             when (type) {
                 "name" -> {
                     dataHomeAdapter.rename(item, newName)
@@ -610,13 +550,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
 
         binding1.lnVina.safeClick {
-            val lit = dataList.filter { it.type == Carrier.VIETNAMOBILE }
+            val lit = dataList.filter { it.type == Carrier.VINAPHONE }
             dataHomeAdapter.submitList(lit)
             popupMenu.dismiss()
         }
 
         binding1.lnMB.safeClick {
-            val lit = dataList.filter { it.type == Carrier.VIETNAMOBILE }
+            val lit = dataList.filter { it.type == Carrier.MOBIFONE }
             dataHomeAdapter.submitList(lit)
             popupMenu.dismiss()
         }
@@ -628,18 +568,45 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         filteredList.clear()
         if (query.isEmpty()) {
             filteredList.addAll(dataList)
-            Log.d("VuLT", "filterWithSearch: query = $filteredList")
         } else {
             val lowerCaseQuery = query.lowercase()
-            Log.d("VuLT", "filterWithSearch: query = $lowerCaseQuery")
             for (item in dataList) {
                 if (item.name?.lowercase()?.contains(lowerCaseQuery) == true) {
-                    Log.d("VuLT", "filterWithSearch:1")
                     filteredList.add(item)
                 }
             }
         }
-        Log.d("VuLT", "filterWithSearch: quer2")
         dataHomeAdapter.submitList(filteredList.toMutableList())
+    }
+
+    private var jobEndLifted: Job? = null
+    private var currentEndLifted = 0
+
+    private fun countTimeEndLifted(callback:()->Unit) {
+        jobEndLifted?.cancel()
+        jobEndLifted = CoroutineScope(Dispatchers.Default + Job()).launch {
+            while (isActive) {
+                delay(1_000L)
+                currentEndLifted--
+                withContext(Dispatchers.Main) {
+                    binding.tvContent.text = currentEndLifted.toString()
+                    if (currentEndLifted == 0) {
+                        callback()
+                        cleanUp()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        cleanUp()
+        super.onDestroy()
+    }
+
+    private fun cleanUp() {
+        binding.lnTimeOut.gone()
+        jobEndLifted?.cancel()
+        jobEndLifted = null
     }
 }
