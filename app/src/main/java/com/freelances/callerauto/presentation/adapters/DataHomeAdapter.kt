@@ -1,33 +1,21 @@
 package com.freelances.callerauto.presentation.adapters
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.res.Resources
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.PopupWindow
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ItemDataBinding
-import com.freelances.callerauto.databinding.LayoutMenuSortBinding
-import com.freelances.callerauto.databinding.LayoutMoreBinding
-import com.freelances.callerauto.di.Carrier
 import com.freelances.callerauto.model.ExcelRow
 import com.freelances.callerauto.presentation.adapters.DataHomeAdapter.Companion.KEY_NAME
 import com.freelances.callerauto.presentation.adapters.DataHomeAdapter.Companion.KEY_NICK_NAME
 import com.freelances.callerauto.presentation.adapters.DataHomeAdapter.Companion.KEY_PHONE_NUMBER
-import com.freelances.callerauto.utils.ext.getApplicationContext
 import com.freelances.callerauto.utils.ext.safeClick
-import com.freelances.callerauto.utils.ext.tap
 
 class DataHomeAdapter(
     private val onClickItem: (Int) -> Unit,

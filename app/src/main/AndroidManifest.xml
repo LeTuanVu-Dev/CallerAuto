@@ -113,6 +113,12 @@
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
+
+        <activity
+            android:name=".presentation.history.HistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
     </application>
 
 </manifest>

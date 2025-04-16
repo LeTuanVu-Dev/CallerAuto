@@ -1,7 +1,6 @@
 package com.freelances.callerauto.presentation.main
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -32,10 +31,11 @@ import com.freelances.callerauto.databinding.LayoutMoreBinding
 import com.freelances.callerauto.di.Carrier
 import com.freelances.callerauto.model.ExcelRow
 import com.freelances.callerauto.presentation.adapters.DataHomeAdapter
+import com.freelances.callerauto.presentation.adapters.HistoryAdapter
 import com.freelances.callerauto.presentation.bases.BaseActivity
 import com.freelances.callerauto.presentation.dialog.ConfirmDeleteDialog
-import com.freelances.callerauto.presentation.dialog.CountTimeReCallDialog
 import com.freelances.callerauto.presentation.dialog.RenameDialog
+import com.freelances.callerauto.presentation.history.HistoryActivity
 import com.freelances.callerauto.presentation.language.LanguageActivity.Companion.selectedPosition
 import com.freelances.callerauto.presentation.setting.SettingActivity
 import com.freelances.callerauto.utils.ext.gone
@@ -106,6 +106,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             binding.ivSort.gone()
             binding.frSearch.gone()
             binding.ivEmpty.visible()
+            binding.tvSeeHistory.gone()
 
         } else {
             binding.lnSelectAll.visible()
@@ -113,6 +114,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             binding.frSearch.visible()
             binding.ivSort.visible()
             binding.ivEmpty.gone()
+            binding.tvSeeHistory.visible()
+
         }
     }
 
@@ -187,6 +190,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
             ivSort.tap {
                 showPopupMenuSort(ivSort)
+            }
+
+            tvSeeHistory.safeClick {
+                navigateTo(HistoryActivity::class.java)
             }
 
             frSearch.tap {
