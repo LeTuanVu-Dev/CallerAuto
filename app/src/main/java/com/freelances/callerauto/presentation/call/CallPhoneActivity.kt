@@ -29,7 +29,7 @@ class CallPhoneActivity :
     BaseActivity<ActivityCallPhoneBinding>(ActivityCallPhoneBinding::inflate) {
 
     companion object {
-        lateinit var service: CallPhoneService
+         var service: CallPhoneService?=null
     }
 
     private var isTimerRunning = false
@@ -74,7 +74,7 @@ class CallPhoneActivity :
 
             ivSpeaker.safeClick {
                 isSpeak = !isSpeak
-                service.changeStateSpeaker(isSpeak)
+                service?.changeStateSpeaker(isSpeak)
                 binding.ivSpeaker.setImageResource(if (isSpeak) R.drawable.ic_anoucer else R.drawable.ic_un_anoucer)
 
             }
@@ -127,7 +127,7 @@ class CallPhoneActivity :
 
     private fun setUpSpeak() {
         isSpeak = sharedPreference.stateEnableSpeaker
-        service.changeStateSpeaker(isSpeak)
+        service?.changeStateSpeaker(isSpeak)
         binding.ivSpeaker.setImageResource(if (isSpeak) R.drawable.ic_anoucer else R.drawable.ic_un_anoucer)
     }
 

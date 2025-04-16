@@ -1,9 +1,6 @@
 package com.freelances.callerauto.presentation.splash
 
-import android.content.Context
 import android.os.Build
-import android.telecom.TelecomManager
-import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import com.freelances.callerauto.databinding.ActivitySplashBinding
 import com.freelances.callerauto.presentation.bases.BaseActivity
@@ -11,10 +8,7 @@ import com.freelances.callerauto.presentation.language.LanguageActivity
 import com.freelances.callerauto.presentation.login.LoginActivity
 import com.freelances.callerauto.presentation.permission.PermissionActivity
 import com.freelances.callerauto.utils.ext.isDefaultDialer
-import com.freelances.callerauto.utils.ext.isDualSimActive
 import com.freelances.callerauto.utils.ext.isGrantStoragePermission
-import com.freelances.callerauto.utils.ext.readPhonePermissionGrant
-import com.freelances.callerauto.utils.ext.visible
 import com.freelances.callerauto.utils.helper.DeviceKeyManager
 import com.freelances.callerauto.utils.helper.LanguageHelper.preUpdateListLanguage
 import com.freelances.callerauto.utils.helper.OverlayPermissionHelper
@@ -23,8 +17,6 @@ import kotlinx.coroutines.launch
 class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding::inflate) {
     override fun initViews() {
         lifecycleScope.launch {
-            sharedPreference.currentSimType =
-                if (isDualSimActive(this@SplashActivity)) sharedPreference.currentSimType else -1
             preUpdateListLanguage()
             checkDoneFirstOpen()
             checkDataKey()
@@ -36,8 +28,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         DeviceKeyManager.getOrValidateDeviceKey(this, "") { _, _ ->
         }
     }
-
-
 
 
     private fun checkDoneFirstOpen() {

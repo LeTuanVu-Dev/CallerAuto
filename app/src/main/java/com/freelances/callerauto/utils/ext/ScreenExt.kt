@@ -33,20 +33,6 @@ fun formatToHourMinuteSecond(totalSeconds: Int): String {
     }
 }
 
-@SuppressLint("MissingPermission")
-fun isDualSimActive(context: Context): Boolean {
-    val subscriptionManager = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
-
-    // Chỉ hoạt động từ API 22 trở lên
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-        val activeSubscriptionInfoList = subscriptionManager.activeSubscriptionInfoList
-        return activeSubscriptionInfoList?.size ?: 0 >= 2
-    }
-
-    return false
-}
-
-
 
 fun Context.getWidthScreenPx(): Int {
     return resources.displayMetrics.widthPixels

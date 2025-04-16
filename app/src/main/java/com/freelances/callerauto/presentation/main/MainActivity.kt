@@ -40,6 +40,8 @@ import com.freelances.callerauto.presentation.language.LanguageActivity.Companio
 import com.freelances.callerauto.presentation.setting.SettingActivity
 import com.freelances.callerauto.utils.ext.gone
 import com.freelances.callerauto.utils.ext.hideSoftKeyboard
+import com.freelances.callerauto.utils.ext.isAPI28OrHigher
+import com.freelances.callerauto.utils.ext.isDefaultDialer
 import com.freelances.callerauto.utils.ext.safeClick
 import com.freelances.callerauto.utils.ext.tap
 import com.freelances.callerauto.utils.ext.visible
@@ -391,7 +393,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
         phoneNumber = dataHomeAdapter.getListSelected()[currentIndex].phoneNumber.toString()
         displayName = dataHomeAdapter.getListSelected()[currentIndex].name.toString()
-        placeCall(context, phoneNumber)
+        if (isAPI28OrHigher){
+            placeCall(context, phoneNumber)
+        }
+        else{
+            callPhoneNumber(context, phoneNumber)
+        }
     }
     private fun placeCall(context: Context, phoneNumber: String) {
         val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
@@ -420,9 +427,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         val intent = Intent(Intent.ACTION_CALL).apply {
             data = Uri.parse("tel:$phoneNumber")
         }
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (isDefaultDialer(this)) {
             isCalling = true
             context.startActivity(intent)
         } else {

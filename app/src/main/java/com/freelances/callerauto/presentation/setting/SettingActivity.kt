@@ -4,12 +4,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import com.freelances.callerauto.R
 import com.freelances.callerauto.databinding.ActivitySettingBinding
 import com.freelances.callerauto.presentation.bases.BaseActivity
 import com.freelances.callerauto.presentation.dialog.EndTimerInputDialog
-import com.freelances.callerauto.utils.ext.isDualSimActive
 import com.freelances.callerauto.utils.ext.safeClick
 import com.freelances.callerauto.utils.ext.tap
 
@@ -25,7 +23,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
     }
 
     private fun initData() {
-        checkShow2Sim()
         updateNumberStartCall(sharedPreference.currentAutoCallPosition.toString())
         updateNumberRepeat(sharedPreference.currentNumberRepeat.toString())
         updateTimerAuto(sharedPreference.currentTimerEndAuto.toString())
@@ -53,12 +50,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
                 setEnableSubView(sharedPreference.stateAutoEnd)
             )
         )
-    }
-
-    private fun checkShow2Sim() {
-        binding.lnTypeSms.isVisible = isDualSimActive(this)
-        sharedPreference.currentSimType =
-            if (isDualSimActive(this)) sharedPreference.currentSimType else -1
     }
 
     private fun setSimSelection(tvSelected: TextView, tvUnselected: TextView, simType: Int) {

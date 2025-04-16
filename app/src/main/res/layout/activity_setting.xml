@@ -105,6 +105,7 @@
                     android:id="@+id/lnTypeSms"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:orientation="horizontal"
                     android:paddingVertical="@dimen/_10sdp">
