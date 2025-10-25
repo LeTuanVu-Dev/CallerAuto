@@ -620,5 +620,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         binding.lnTimeOut.gone()
         jobEndLifted?.cancel()
         jobEndLifted = null
+        displayName = ""
+        phoneNumber = ""
     }
 }

@@ -1,5 +1,6 @@
 package com.freelances.callerauto.presentation.service
 
+import CallPhoneManager
 import android.content.Intent
 import android.telecom.Call
 import android.telecom.CallAudioState
@@ -9,11 +10,10 @@ import com.freelances.callerauto.presentation.call.CallPhoneActivity
 
 class CallPhoneService : InCallService() {
 
-    fun changeStateSpeaker(boolean: Boolean){
-        if (boolean){
+    fun changeStateSpeaker(boolean: Boolean) {
+        if (boolean) {
             setAudioRoute(CallAudioState.ROUTE_SPEAKER)
-        }
-        else{
+        } else {
             setAudioRoute(CallAudioState.ROUTE_EARPIECE)
         }
     }

@@ -29,7 +29,7 @@ class CallPhoneActivity :
     BaseActivity<ActivityCallPhoneBinding>(ActivityCallPhoneBinding::inflate) {
 
     companion object {
-         var service: CallPhoneService?=null
+        var service: CallPhoneService? = null
     }
 
     private var isTimerRunning = false
@@ -207,8 +207,8 @@ class CallPhoneActivity :
             else -> Unit
         }
 
-        binding.textDisplayName.text = displayName.ifEmpty { gsmCallModel.displayName?:"Unknown" }
-        binding.phoneNumber.text = phoneNumber.ifEmpty { gsmCallModel.phoneNumber?:"Unknown" }
+        binding.textDisplayName.text = displayName.ifEmpty { gsmCallModel.displayName ?: "Unknown" }
+        binding.phoneNumber.text = phoneNumber.ifEmpty { gsmCallModel.phoneNumber ?: "Unknown" }
 
         binding.btnAcceptCall.visibility = when (gsmCallModel.status) {
             GsmCallModel.Status.RINGING -> View.VISIBLE
