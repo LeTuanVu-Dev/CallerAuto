@@ -4,86 +4,103 @@ import android.content.Context
 import android.provider.Settings
 import com.freelances.callerauto.model.KeyModel
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.ktx.firestore
 
 object DeviceKeyManager {
 
-    fun getDeviceId(context: Context): String {
+    private fun getDeviceId(context: Context): String {
         return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    fun generateRandomKey(length: Int = 10): String {
-        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return (1..length).map { chars.random() }.joinToString("")
-    }
-
-    fun getOrValidateDeviceKey(
+    /**
+     * Kiểm tra key người dùng nhập:
+     * - Nếu key tồn tại và countUserLogin == 0 => claim (set countUserLogin = 1)
+     * - Nếu countUserLogin == 1 => cho phép login lại
+     * - Không tự tạo key mới
+     */
+    fun validateAndClaimKey(
         context: Context,
-        inputValue: String?,
-        onResult: (success: Boolean, storedValue: String?) -> Unit
+        inputKey: String,
+        onResult: (Boolean, String?) -> Unit
     ) {
-        val deviceId = getDeviceId(context)
-        val keyRef = Firebase.firestore.collection("keys").document(deviceId)
+        val key = inputKey.trim().uppercase()
+        if (key.isEmpty()) {
+            onResult(false, "Key trống")
+            return
+        }
 
-        keyRef.get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                val storedValue = document.getString("value")
-                if (inputValue != null && inputValue == storedValue) {
-                    onResult(true, storedValue)
-                } else {
-                    onResult(false, storedValue)
+        val db = Firebase.firestore
+        val ref = db.collection("keys").document(key)
+
+        db.runTransaction { tx ->
+            val snapshot = tx.get(ref)
+            if (!snapshot.exists()) {
+                throw IllegalStateException("Key không tồn tại")
+            }
+
+            val model = snapshot.toObject(KeyModel::class.java)
+                ?: throw IllegalStateException("Dữ liệu key không hợp lệ")
+
+            return@runTransaction when {
+                model.countUserLogin == 0 -> {
+                    // claim key lần đầu
+                    tx.update(ref, mapOf(
+                        "countUserLogin" to 1
+                    ))
+                    true
                 }
-            } else {
-                val newKey = generateRandomKey()
-                val data = mapOf(
-                    "value" to newKey,
-                    "createdAt" to FieldValue.serverTimestamp()
-                )
-                keyRef.set(data).addOnSuccessListener {
-                    onResult(true, newKey)
-                }.addOnFailureListener {
-                    onResult(false, null)
+
+                model.countUserLogin == 1 -> {
+                    // key đã được dùng, nhưng vẫn cho login lại
+                    true
+                }
+
+                else -> {
+                    throw IllegalStateException("Key không hợp lệ")
                 }
             }
-        }.addOnFailureListener {
-            onResult(false, null)
+        }.addOnSuccessListener {
+            onResult(true, "OK")
+        }.addOnFailureListener { e ->
+            onResult(false, e.message)
         }
     }
 
-    fun getAllKeys(
-        onResult: (Boolean, List<Pair<String, KeyModel>>) -> Unit
+    /**
+     * Dùng khi mở lại app:
+     * - Nếu key tồn tại và countUserLogin == 1 => cho phép
+     */
+    fun verifySavedKey(
+        context: Context,
+        savedKey: String,
+        onResult: (Boolean, String?) -> Unit
     ) {
-        Firebase.firestore.collection("keys")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val list = snapshot.documents.map { doc ->
-                    val key = doc.id
-                    val model = doc.toObject(KeyModel::class.java) ?: KeyModel()
-                    key to model
+        val key = savedKey.trim().uppercase()
+        if (key.isEmpty()) {
+            onResult(false, "Key trống")
+            return
+        }
+
+        val db = Firebase.firestore
+        val ref = db.collection("keys").document(key)
+
+        ref.get()
+            .addOnSuccessListener { doc ->
+                if (!doc.exists()) {
+                    onResult(false, "Key không tồn tại")
+                    return@addOnSuccessListener
                 }
-                onResult(true, list)
+
+                val model = doc.toObject(KeyModel::class.java)
+                if (model != null && model.countUserLogin == 1) {
+                    onResult(true, "OK")
+                } else {
+                    onResult(false, "Key chưa được claim hoặc không hợp lệ")
+                }
             }
-            .addOnFailureListener {
-                onResult(false, emptyList())
+            .addOnFailureListener { e ->
+                onResult(false, e.message)
             }
     }
-
-
-
-    fun upsertKey(
-        key: String,
-        keyModel: KeyModel,
-        onResult: (Boolean) -> Unit
-    ) {
-        Firebase.firestore.collection("keys")
-            .document(key)
-            .set(keyModel, SetOptions.merge())
-            .addOnSuccessListener { onResult(true) }
-            .addOnFailureListener { onResult(false) }
-    }
-
-
-
 }

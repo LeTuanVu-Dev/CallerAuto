@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_item_setting"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/_18sdp"
+        android:paddingVertical="@dimen/_16sdp"
+        tools:ignore="UselessParent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imv_ic_rate"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_wifi_no" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_13sdp"
+            android:textSize="@dimen/_14ssp"
+            android:fontFamily="@font/roboto_500"
+            android:text="@string/lost_network_connection"
+            android:textAlignment="center"
+            android:textColor="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDescription"
+            android:fontFamily="@font/roboto_400"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="@string/internet_connection_to_show_your_location"
+            android:textAlignment="center"
+            android:textColor="#86909C"
+            android:textSize="@dimen/_12ssp" />
+
+        <TextView
+            android:id="@+id/btnOk"
+            android:fontFamily="@font/roboto_500"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:paddingVertical="@dimen/_11sdp"
+            android:gravity="center"
+            android:layout_marginHorizontal="@dimen/_13sdp"
+            android:background="@drawable/bg_dialog_negative_button"
+            android:text="@string/go_to_settings"
+            android:textSize="@dimen/_12ssp"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+</FrameLayout>

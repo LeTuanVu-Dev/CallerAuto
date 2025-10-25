@@ -13,10 +13,10 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
         android:layout_marginTop="@dimen/_36sdp"
         android:layout_marginEnd="@dimen/_8sdp"
+        android:gravity="center"
+        android:orientation="horizontal"
         android:paddingHorizontal="@dimen/_14sdp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -76,11 +76,11 @@
         android:fontFamily="@font/roboto_400"
         android:gravity="center_vertical"
         android:hint="@string/enter_your_key_here"
-        android:maxLength="150"
-        android:singleLine="true"
         android:imeOptions="actionDone"
+        android:maxLength="150"
         android:paddingHorizontal="@dimen/_13sdp"
         android:paddingVertical="@dimen/_13sdp"
+        android:singleLine="true"
         android:textColor="@color/white"
         android:textColorHint="@color/color_EBEBF5_30"
         android:textSize="@dimen/_11ssp"
@@ -93,8 +93,8 @@
         android:id="@+id/tvApply"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_20sdp"
         android:layout_marginHorizontal="@dimen/_40sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:background="@drawable/bg_dialog_negative_button"
         android:fontFamily="@font/roboto_500"
         android:gravity="center"
@@ -103,7 +103,18 @@
         android:text="@string/apply"
         android:textColor="@color/black"
         android:textSize="@dimen/_13ssp"
-        app:layout_constraintTop_toBottomOf="@+id/edInput"
+        app:layout_constraintTop_toBottomOf="@+id/edInput" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_16sdp"
+        android:fontFamily="@font/roboto_400"
+        android:gravity="center"
+        android:text="App chỉ phục vụ vào mục đích gửi thông báo , kết nối nhanh đến người khác, trường hợp quý khách sử dụng vào mục đích xấu,làm làm phiền, quấy phá, tuyên truyền dữ liệu xấu và hành vi tiết lộ thông tin dữ liệu người khác , bạn sẽ bị cấm sử dụng vĩnh viễn
+Chúng tôi hoàn toàn không chịu trách nhiệm hành vi vi phạm pháp luật, sử dụng vào mục đích xấu người sử dụng hoàn toàn chịu trách nhiệm sau khi đọc xong thông báo này và sử dụng app"
+        android:textColor="@color/color_red"
+        app:layout_constraintTop_toBottomOf="@id/tvApply"
         />
 
 

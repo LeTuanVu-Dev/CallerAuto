@@ -11,28 +11,34 @@ import com.freelances.callerauto.utils.helper.DeviceKeyManager
 class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate) {
 
     override fun initViews() {
-        if (sharedPreference.valueLogin.isNotEmpty()) {
-            checkLogin(sharedPreference.valueLogin)
+        val saved = sharedPreference.valueLogin
+        if (saved.isNotEmpty()) {
+            DeviceKeyManager.verifySavedKey(this, saved) { success, msg ->
+                if (success) {
+                    navigateTo(MainActivity::class.java, isFinish = true)
+                } else {
+                    Toast.makeText(this, msg ?: "Vui lòng nhập key", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         binding.tvApply.tap {
             hideKeyboard()
             val input = binding.edInput.text.toString().trim()
-            checkLogin(input)
-        }
-    }
+            if (input.isEmpty()) {
+                Toast.makeText(this, "Nhập key trước khi xác nhận", Toast.LENGTH_SHORT).show()
+                return@tap
+            }
 
-    private fun checkLogin(input:String){
-        DeviceKeyManager.getOrValidateDeviceKey(this, input) { success, key ->
-            if (success) {
-                sharedPreference.valueLogin = input
-                Toast.makeText(this, "Đăng nhập thành công với key: $key", Toast.LENGTH_SHORT)
-                    .show()
-                // Cho truy cập app
-                navigateTo(MainActivity::class.java, isFinish = true)
-            } else {
-                Toast.makeText(this, "Sai key hoặc chưa có quyền truy cập", Toast.LENGTH_SHORT)
-                    .show()
+            DeviceKeyManager.validateAndClaimKey(this, input) { success, msg ->
+                if (success) {
+                    sharedPreference.valueLogin = input.uppercase()
+                    Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
+                    navigateTo(MainActivity::class.java, isFinish = true)
+                } else {
+                    Toast.makeText(this, msg ?: "Sai key hoặc chưa có quyền", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
         }
     }

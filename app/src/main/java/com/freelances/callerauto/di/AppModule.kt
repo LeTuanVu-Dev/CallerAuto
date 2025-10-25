@@ -2,6 +2,7 @@ package com.freelances.callerauto.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.freelances.callerauto.utils.helper.NetworkMonitor
 import com.freelances.callerauto.utils.preference.AppSharedPreference
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
@@ -12,4 +13,5 @@ val appModule = module {
         androidContext().getSharedPreferences(AppSharedPreference.PREF_NAME, Context.MODE_PRIVATE)
     }
     singleOf(::AppSharedPreference)
+    singleOf(::NetworkMonitor)
 }

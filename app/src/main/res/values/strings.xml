@@ -45,4 +45,8 @@
     <string name="input_nick_name">Nhập biệt danh mới của bạn</string>
     <string name="input_phone">Nhập số mới</string>
     <string name="overlay">Overlay</string>
+
+    <string name="lost_network_connection">Lost network connection</string>
+    <string name="internet_connection_to_show_your_location">Internet connection to show your location</string>
+    <string name="go_to_settings">Go to Settings</string>
 </resources>
