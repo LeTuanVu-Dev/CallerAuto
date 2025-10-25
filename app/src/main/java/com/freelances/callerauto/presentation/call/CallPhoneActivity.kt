@@ -233,6 +233,8 @@ class CallPhoneActivity :
     }
 
     override fun onDestroy() {
+        displayName = ""
+        phoneNumber = ""
         jobEndLifted?.cancel()
         stopTimer()
         super.onDestroy()
